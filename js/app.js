@@ -2,23 +2,31 @@
 var CANVAS_DIMENSIONS = [505, 606];
 var ENEMY_HEIGHTS = [63, 146, 229];
 var ENEMY_VELOCITY = 50;
+//var doc = global.document;
+//var canvas = document.createElement('canvas');
+//var ctx = canvas.getContext('2d');
 
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
 }
 
 // Enemies our player must avoid
-var Enemy = function() {
+var Enemy = function(x, y) { //(0, ENEMY_HEIGHTS[getRandomInt(0, 3)])
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
 
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
-    this.sprite = 'images/enemy-bug.png';
-//    this.loc = [];
-    this.x = 0;
-    this.y = ENEMY_HEIGHTS[getRandomInt(0, 3)];
-}
+    var obj = {
+        sprite : 'images/enemy-bug.png',
+        x : x,
+        y : y
+    };
+//    this.sprite = 'images/enemy-bug.png';
+//    this.x = x;
+//    this.y = y;
+    return obj;
+};
 
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
@@ -37,25 +45,57 @@ Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 }
 
+//TODO
+Enemy.prototype.reset = function() {
+    console.log('implement reset')
+}
+
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
 // TODO try implement as pseudo classical constructor
-var Player = function() {
-}
+//constructor for Player is messed up
+var Player = function(x, y) {
+    var obj = Enemy(x, y);
+    obj.sprite = 'images/char-cat-girl.png'; 
+    return obj;
+};
 
 //TODO
-Player.prototype.handleInput = function() {
+Player.prototype.handleInput = function(direction) {
+    if (direction == 'left') {
+        //need to check if going off canvas
+        this.update(-5, 0);
+    } else if (direction == 'up') {
+        //need to check if going off canvas
+        this.update(0, -5);
+    } else if (direction == 'right') {
+        //need to check if going off canvas
+        this.update(5, 0);        
+    } else { //direction == 'down'
+        //need to check if going off canvas
+        this.update(0, 5);
+    }
 }
 
+//Player.update = function(dt) {
+//    console.log('test todo player update');
+//}
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // ??Place the player object in a variable called player
-var enemy = new Enemy;
 var allEnemies = [];
-allEnemies.push(enemy);
-var player = new Player;
+var enemy1 = new Enemy(0, ENEMY_HEIGHTS[getRandomInt(0, 3)]);
+//var enemy2 = new Enemy();
+allEnemies.push(enemy1);
+//allEnemies.push(enemy2);
+console.log(allEnemies);
+
+var player = Player(0, 155);
+console.log(player.sprite);
+console.log(player.x);
+console.log(player.y);
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
