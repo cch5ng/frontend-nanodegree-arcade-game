@@ -2,6 +2,8 @@
 var CANVAS_DIMENSIONS = [505, 606];
 var ENEMY_HEIGHTS = [63, 146, 229];
 var ENEMY_VELOCITY = 50;
+var ENEMY_IMAGE = 'images/enemy-bug.png';
+var PLAYER_IMAGE = 'images/char-cat-girl.png';
 //var doc = global.document;
 //var canvas = document.createElement('canvas');
 //var ctx = canvas.getContext('2d');
@@ -17,15 +19,9 @@ var Enemy = function(x, y) { //(0, ENEMY_HEIGHTS[getRandomInt(0, 3)])
 
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
-//    var obj = {
-//        sprite : 'images/enemy-bug.png',
-//        x : x,
-//        y : y
-//    };
-    this.sprite = 'images/enemy-bug.png';
+    this.sprite = ENEMY_IMAGE;
     this.x = x;
     this.y = y;
-//    return obj;
 };
 
 // Update the enemy's position, required method for game
@@ -55,17 +51,16 @@ Enemy.prototype.reset = function() {
 // a handleInput() method.
 // TODO try implement as pseudo classical constructor
 //constructor for Player is messed up
-//var Player = function(x, y) {
-//    var obj = Enemy(x, y);
-//    obj.sprite = 'images/char-cat-girl.png'; 
-//    return obj;
-//};
 
-var Player = new Enemy(0, 155);
-Player.sprite = 'images/char-cat-girl.png'; 
+var Player = function(x, y) {
+    Enemy.call(this, x, y);
+    //this.sprite = PLAYER_IMAGE;
+};
+Player.prototype = Object.create(Enemy.prototype);
+Player.sprite = PLAYER_IMAGE; 
 
 //TODO
-Player.handleInput = function(direction) {
+Player.prototype.handleInput = function(direction) {
     if (direction == 'left') {
         //need to check if going off canvas
         this.update(-5, 0);
@@ -81,9 +76,9 @@ Player.handleInput = function(direction) {
     }
 }
 
-//Player.prototype.update = function() {
-//    console.log('test todo player update');
-//}
+Player.prototype.update = function() {
+    console.log('implement player update');
+};
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
@@ -93,11 +88,11 @@ var enemy1 = new Enemy(0, ENEMY_HEIGHTS[getRandomInt(0, 3)]);
 //var enemy2 = new Enemy();
 allEnemies.push(enemy1);
 //allEnemies.push(enemy2);
-
-var player = Player;
-//console.log(player.sprite);
-//console.log(player.x);
-//console.log(player.y);
+//var myPlayer = Player(505 / 2, 606 - 83);
+var player = new Player(252, 400);
+console.log(player.sprite);
+console.log(player.x);
+console.log(player.y);
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
