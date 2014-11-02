@@ -17,15 +17,15 @@ var Enemy = function(x, y) { //(0, ENEMY_HEIGHTS[getRandomInt(0, 3)])
 
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
-    var obj = {
-        sprite : 'images/enemy-bug.png',
-        x : x,
-        y : y
-    };
-//    this.sprite = 'images/enemy-bug.png';
-//    this.x = x;
-//    this.y = y;
-    return obj;
+//    var obj = {
+//        sprite : 'images/enemy-bug.png',
+//        x : x,
+//        y : y
+//    };
+    this.sprite = 'images/enemy-bug.png';
+    this.x = x;
+    this.y = y;
+//    return obj;
 };
 
 // Update the enemy's position, required method for game
@@ -35,8 +35,8 @@ Enemy.prototype.update = function(dt) {
     // which will ensure the game runs at the same speed for
     // all computers.
 //why can't I access Engine.canvas.width
-    if (this.x < CANVAS_DIMENSIONS[0] + 101) {
-        this.x += ENEMY_VELOCITY * dt;
+    if (this.x < 505 + 101) { //CANVAS_DIMENSIONS[0]
+        this.x += 50 * dt; //ENEMY_VELOCITY
     }
 }
 
@@ -55,14 +55,17 @@ Enemy.prototype.reset = function() {
 // a handleInput() method.
 // TODO try implement as pseudo classical constructor
 //constructor for Player is messed up
-var Player = function(x, y) {
-    var obj = Enemy(x, y);
-    obj.sprite = 'images/char-cat-girl.png'; 
-    return obj;
-};
+//var Player = function(x, y) {
+//    var obj = Enemy(x, y);
+//    obj.sprite = 'images/char-cat-girl.png'; 
+//    return obj;
+//};
+
+var Player = new Enemy(0, 155);
+Player.sprite = 'images/char-cat-girl.png'; 
 
 //TODO
-Player.prototype.handleInput = function(direction) {
+Player.handleInput = function(direction) {
     if (direction == 'left') {
         //need to check if going off canvas
         this.update(-5, 0);
@@ -78,7 +81,7 @@ Player.prototype.handleInput = function(direction) {
     }
 }
 
-//Player.update = function(dt) {
+//Player.prototype.update = function() {
 //    console.log('test todo player update');
 //}
 
@@ -90,12 +93,11 @@ var enemy1 = new Enemy(0, ENEMY_HEIGHTS[getRandomInt(0, 3)]);
 //var enemy2 = new Enemy();
 allEnemies.push(enemy1);
 //allEnemies.push(enemy2);
-console.log(allEnemies);
 
-var player = Player(0, 155);
-console.log(player.sprite);
-console.log(player.x);
-console.log(player.y);
+var player = Player;
+//console.log(player.sprite);
+//console.log(player.x);
+//console.log(player.y);
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
