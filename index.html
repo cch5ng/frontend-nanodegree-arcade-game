@@ -8,5 +8,15 @@
     <script src="js/resources.js"></script>
     <script src="js/app.js"></script>
     <script src="js/engine.js"></script>
+    <audio id="bgdAudio" loop onloadeddata="setLowVolume()" autoplay>
+		  <source src="media/Citrus_KeizoAkutagawa.mp3" type="audio/mpeg" volume="0.5"/>
+		  <source src="media/Citrus_KeizoAkutagawa.ogg" type="audio/ogg"volume="0.5"/>
+		</audio>
+		<script>
+			var setLowVolume = function() {
+				var backgroundAudio = document.getElementById("bgdAudio")
+				backgroundAudio.volume=0.12;
+			}
+		</script>
 </body>
 </html>
