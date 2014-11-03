@@ -4,7 +4,7 @@ var ENEMY_HEIGHTS = [63, 146, 229];
 var ENEMY_VELOCITY = 50;
 var ENEMY_IMAGE = 'images/enemy-bug.png';
 var PLAYER_IMAGE = 'images/char-cat-girl.png';
-var PLAYER_START_LOC = [202, 395];
+var PLAYER_START_LOC = [202, 405];
 var PLAYER_MOVE = [101, 83];
 
 //helper functions
@@ -18,7 +18,7 @@ function getStoneCell(x, y) {
     var stoneCell = [];
     var cellx = -1;
     var celly = -1;
-    if (x >= 0 && x < CANVAS_DIMENSIONS[0] && y >= 63 && y <=229) {
+    if (x >= 0 && x < CANVAS_DIMENSIONS[0] && y >= 63 && y <=249) {
         cellx = Math.floor(x / 101);
         celly = Math.floor(y / 83);
     }
@@ -76,7 +76,7 @@ var Player = function(x, y) {
     Enemy.call(this, x, y);
 //    this.sprite = PLAYER_IMAGE;
 };
-Player.sprite = PLAYER_IMAGE;
+//Player.sprite = PLAYER_IMAGE;
 
 Player.prototype = Object.create(Enemy.prototype);
 Player.prototype.constructor = Player;
@@ -113,12 +113,17 @@ Player.prototype.update = function() {
         this.reset();
     }
     //check for collision with bug
+    //TODO - collision not detected when player and bug are in the bottom row of stones
+    //console.log('player.x: ' + this.x);
+    //console.log('player.y: ' + this.y);
     playerStoneCell = getStoneCell(this.x, this.y);
+    //console.log('playerStoneCell: ' + playerStoneCell);
     for (var i=0; i < allEnemies.length; i++) {
         enemyStoneCell = getStoneCell(allEnemies[i].x, allEnemies[i].y);
-        if (playerStoneCell[0] == enemyStoneCell[0] && playerStoneCell[1] == enemyStoneCell[1]) {
+        //console.log('enemyStoneCell: ' + enemyStoneCell);
+        if (playerStoneCell[0] == enemyStoneCell[0] && playerStoneCell[1] == enemyStoneCell[1] && enemyStoneCell[0] >= 0 && enemyStoneCell[1] >=0) {
             this.reset();
-            console.log('reset from StoneCell overlap');
+            //console.log('reset from StoneCell overlap');
         }
     }
 };
@@ -137,7 +142,7 @@ var enemy1 = new Enemy(0, ENEMY_HEIGHTS[getRandomInt(0, 3)]);
 allEnemies.push(enemy1);
 //allEnemies.push(enemy2);
 var player = new Player(PLAYER_START_LOC[0], PLAYER_START_LOC[1]);
-//player.sprite = PLAYER_IMAGE;
+player.sprite = PLAYER_IMAGE;
 //console.log(player.sprite);
 //console.log(player.x);
 //console.log(player.y);
