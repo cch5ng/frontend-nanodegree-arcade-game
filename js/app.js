@@ -1,25 +1,33 @@
 //global vars
 var CANVAS_DIMENSIONS = [505, 606];
 var ENEMY_HEIGHTS = [63, 146, 229];
-var ENEMY_VELOCITY = 50;
+//var ENEMY_VELOCITY = 50;//[20, 75] ... might want to make an array indicating min and max velocity
 var ENEMY_IMAGE = 'images/enemy-bug.png';
 var PLAYER_IMAGE = 'images/char-cat-girl.png';
 var PLAYER_START_LOC = [202, 405];
 var PLAYER_MOVE = [101, 83];
+//var MAX_ENEMIES = 8;
+//var score = 0; //want to add points for prizes
+var lives = 3; //want to subtract lives when collide with bugs
+var LIVES_TXT = 'Lives ' + lives;
 
 //helper functions
-function getRandomInt(min, max) {
+function getRandomInt(min, max) { //note that max is non inclusive or resulting max becomes max - 1
     return Math.floor(Math.random() * (max - min)) + min;
 }
 
 function getStoneCell(x, y) {
 //used to determine enemy-player collisions, where each stone is considered a cell in a grid
-//if the player and enemy are in the same cell simultaneously, 
+//if the player and enemy are in the same cell simultaneously, a collision will be detected in Player's update() funct
     var stoneCell = [];
     var cellx = -1;
     var celly = -1;
     if (x >= 0 && x < CANVAS_DIMENSIONS[0] && y >= 63 && y <=249) {
-        cellx = Math.floor(x / 101);
+        if (x % 101 >= 51) { //makes collision detection a little more sensitive when bug is midway between cells
+            cellx = Math.ceil(x / 101);
+        } else {
+            cellx = Math.floor(x / 101);
+        }
         celly = Math.floor(y / 83);
     }
     stoneCell[0] = cellx;
@@ -28,8 +36,10 @@ function getStoneCell(x, y) {
     return stoneCell;
 }
 
-
 //classes
+
+//might want to think about function that tracks number of active enemies
+//should probably also spawn additional enemies if below the max allowed num enemies
 
 // Enemies our player must avoid
 var Enemy = function(x, y) { //(0, ENEMY_HEIGHTS[getRandomInt(0, 3)])
@@ -38,10 +48,12 @@ var Enemy = function(x, y) { //(0, ENEMY_HEIGHTS[getRandomInt(0, 3)])
 
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
+    var velocity = getRandomInt(25, 76);
+    //console.log('velocity: ' + velocity);
     this.x = x;
     this.y = y;
     this.sprite = ENEMY_IMAGE;
-
+    this.velocity = velocity;
 };
 
 // Update the enemy's position, required method for game
@@ -52,18 +64,28 @@ Enemy.prototype.update = function(dt) {
     // all computers.
 //why can't I access Engine.canvas.width
     if (this.x < CANVAS_DIMENSIONS[0] + 101) {
-        this.x += ENEMY_VELOCITY * dt;
+        this.x += this.velocity * dt; //ENEMY_VELOCITY 
+    }
+    if (this.x > CANVAS_DIMENSIONS[0]) {
+        this.reset();
+        //setTimeout(this.reset(), getRandomInt(1000, 21000));
     }
 }
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    if (lives > 0) {
+        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    }
 }
 
 //TODO
 Enemy.prototype.reset = function() {
-    console.log('implement reset')
+    this.x = 0;
+    this.y = ENEMY_HEIGHTS[getRandomInt(0, 3)];
+    this.velocity = getRandomInt(25, 76);
+    //console.log('reset velocity: ' + this.velocity);
+    //console.log('implement reset')
 }
 
 // Now write your own player class
@@ -74,18 +96,11 @@ Enemy.prototype.reset = function() {
 
 var Player = function(x, y) {
     Enemy.call(this, x, y);
-//    this.sprite = PLAYER_IMAGE;
+    this.sprite = PLAYER_IMAGE;
 };
-//Player.sprite = PLAYER_IMAGE;
 
 Player.prototype = Object.create(Enemy.prototype);
 Player.prototype.constructor = Player;
-
-//var Player = function(x, y) {
-//    Enemy.call(this, x, y);
-//    Enemy.sprite = PLAYER_IMAGE;
-//};
-//Player.prototype = Object.create(Enemy.prototype);
 
 Player.prototype.handleInput = function(direction) {
     if (direction == 'left') {
@@ -111,19 +126,15 @@ Player.prototype.update = function() {
 
     if (this.y < 63) { //check if player falls into water
         this.reset();
+        lives -= 1;
     }
     //check for collision with bug
-    //TODO - collision not detected when player and bug are in the bottom row of stones
-    //console.log('player.x: ' + this.x);
-    //console.log('player.y: ' + this.y);
     playerStoneCell = getStoneCell(this.x, this.y);
-    //console.log('playerStoneCell: ' + playerStoneCell);
     for (var i=0; i < allEnemies.length; i++) {
         enemyStoneCell = getStoneCell(allEnemies[i].x, allEnemies[i].y);
-        //console.log('enemyStoneCell: ' + enemyStoneCell);
         if (playerStoneCell[0] == enemyStoneCell[0] && playerStoneCell[1] == enemyStoneCell[1] && enemyStoneCell[0] >= 0 && enemyStoneCell[1] >=0) {
             this.reset();
-            //console.log('reset from StoneCell overlap');
+            lives -= 1;
         }
     }
 };
@@ -133,19 +144,37 @@ Player.prototype.reset = function() {
     this.y = PLAYER_START_LOC[1];
 };
 
+var Text = function() { //text to render like lives and score
+    this.render = function() {
+        var metrics = ctx.measureText(LIVES_TXT);
+        //console.log('clear rect x: ' + (CANVAS_DIMENSIONS[0] - metrics.width).toString());
+        //console.log('clear rect width: ' + metrics.width);
+        //ctx.rect(CANVAS_DIMENSIONS[0] - metrics.width, 10, metrics.width, 20);
+        //ctx.strokeStyle = 'blue';
+        //ctx.stroke();
+        ctx.clearRect(CANVAS_DIMENSIONS[0] - metrics.width, 0, metrics.width, 35);
+        ctx.fillText(LIVES_TXT, CANVAS_DIMENSIONS[0] - metrics.width, 30);
+    }
+    this.update = function() {
+        var curLives = lives;
+        LIVES_TXT = 'Lives ' + curLives;
+//        ctx.clearRect(CANVAS_DIMENSIONS[0] - metrics.width, 30, metrics.width, metrics.height);
+//        ctx.fillText('Lives ' + curLives, CANVAS_DIMENSIONS[0] - metrics.width, 30);
+    }
+};
+
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // ??Place the player object in a variable called player
-var allEnemies = [];
-var enemy1 = new Enemy(0, ENEMY_HEIGHTS[getRandomInt(0, 3)]);
-//var enemy2 = new Enemy();
-allEnemies.push(enemy1);
-//allEnemies.push(enemy2);
 var player = new Player(PLAYER_START_LOC[0], PLAYER_START_LOC[1]);
-player.sprite = PLAYER_IMAGE;
-//console.log(player.sprite);
-//console.log(player.x);
-//console.log(player.y);
+var allEnemies = [];
+
+for (var j = 0; j < 4; j++) { //MAX_ENEMIES
+    var enemy = new Enemy(0, ENEMY_HEIGHTS[getRandomInt(0, 3)]);
+    allEnemies.push(enemy);
+}
+
+var livesText = new Text();
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.

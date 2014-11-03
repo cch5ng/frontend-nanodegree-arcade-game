@@ -9,6 +9,7 @@ var Engine = (function(global) {
     canvas.width = 505;
     canvas.height = 606;
     doc.body.appendChild(canvas);
+    ctx.font = "30pt Arial";
 
     function main() {
         var now = Date.now(),
@@ -38,6 +39,7 @@ var Engine = (function(global) {
             enemy.update(dt);
         });
         player.update();
+        livesText.update();
     }
 
     function render() {
@@ -52,13 +54,11 @@ var Engine = (function(global) {
             numRows = 6,
             numCols = 5,
             row, col;
-
         for (row = 0; row < numRows; row++) {
             for (col = 0; col < numCols; col++) {
                 ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
             }
         }
-
         renderEntities();
     }
 
@@ -67,6 +67,8 @@ var Engine = (function(global) {
             enemy.render();
         });
         player.render();
+        livesText.render();
+        console.log('render text');
     }
 
     function reset() {
@@ -78,7 +80,8 @@ var Engine = (function(global) {
         'images/water-block.png',
         'images/grass-block.png',
         'images/enemy-bug.png',
-        'images/char-boy.png'
+        'images/char-boy.png',
+        'images/char-cat-girl.png'
     ]);
     Resources.onReady(init);
 
