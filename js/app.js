@@ -4,13 +4,32 @@ var ENEMY_HEIGHTS = [63, 146, 229];
 var ENEMY_VELOCITY = 50;
 var ENEMY_IMAGE = 'images/enemy-bug.png';
 var PLAYER_IMAGE = 'images/char-cat-girl.png';
-//var doc = global.document;
-//var canvas = document.createElement('canvas');
-//var ctx = canvas.getContext('2d');
+var PLAYER_START_LOC = [202, 395];
+var PLAYER_MOVE = [101, 83];
 
+//helper functions
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
 }
+
+function getStoneCell(x, y) {
+//used to determine enemy-player collisions, where each stone is considered a cell in a grid
+//if the player and enemy are in the same cell simultaneously, 
+    var stoneCell = [];
+    var cellx = -1;
+    var celly = -1;
+    if (x >= 0 && x < CANVAS_DIMENSIONS[0] && y >= 63 && y <=229) {
+        cellx = Math.floor(x / 101);
+        celly = Math.floor(y / 83);
+    }
+    stoneCell[0] = cellx;
+    stoneCell[1] = celly;
+
+    return stoneCell;
+}
+
+
+//classes
 
 // Enemies our player must avoid
 var Enemy = function(x, y) { //(0, ENEMY_HEIGHTS[getRandomInt(0, 3)])
@@ -19,9 +38,10 @@ var Enemy = function(x, y) { //(0, ENEMY_HEIGHTS[getRandomInt(0, 3)])
 
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
-    this.sprite = ENEMY_IMAGE;
     this.x = x;
     this.y = y;
+    this.sprite = ENEMY_IMAGE;
+
 };
 
 // Update the enemy's position, required method for game
@@ -31,8 +51,8 @@ Enemy.prototype.update = function(dt) {
     // which will ensure the game runs at the same speed for
     // all computers.
 //why can't I access Engine.canvas.width
-    if (this.x < 505 + 101) { //CANVAS_DIMENSIONS[0]
-        this.x += 50 * dt; //ENEMY_VELOCITY
+    if (this.x < CANVAS_DIMENSIONS[0] + 101) {
+        this.x += ENEMY_VELOCITY * dt;
     }
 }
 
@@ -54,30 +74,58 @@ Enemy.prototype.reset = function() {
 
 var Player = function(x, y) {
     Enemy.call(this, x, y);
-    //this.sprite = PLAYER_IMAGE;
+//    this.sprite = PLAYER_IMAGE;
 };
-Player.prototype = Object.create(Enemy.prototype);
-Player.sprite = PLAYER_IMAGE; 
+Player.sprite = PLAYER_IMAGE;
 
-//TODO
+Player.prototype = Object.create(Enemy.prototype);
+Player.prototype.constructor = Player;
+
+//var Player = function(x, y) {
+//    Enemy.call(this, x, y);
+//    Enemy.sprite = PLAYER_IMAGE;
+//};
+//Player.prototype = Object.create(Enemy.prototype);
+
 Player.prototype.handleInput = function(direction) {
     if (direction == 'left') {
-        //need to check if going off canvas
-        this.update(-5, 0);
+        if (this.x - PLAYER_MOVE[0] >= 0) { //checks that player can't move off screen left
+            this.x -= PLAYER_MOVE[0];
+        }
     } else if (direction == 'up') {
-        //need to check if going off canvas
-        this.update(0, -5);
-    } else if (direction == 'right') {
-        //need to check if going off canvas
-        this.update(5, 0);        
-    } else { //direction == 'down'
-        //need to check if going off canvas
-        this.update(0, 5);
+        this.y -= PLAYER_MOVE[1];
+    } else if (direction == 'right') { //checks that player can't move off screen right
+        if (this.x + PLAYER_MOVE[0] < CANVAS_DIMENSIONS[0]) {
+            this.x += PLAYER_MOVE[0];
+        }
+    } else { //direction == 'down' 
+        if (this.y + PLAYER_MOVE[1] <= PLAYER_START_LOC[1]) { //checks that player can't move below initial screen y position
+            this.y += PLAYER_MOVE[1];
+        }
     }
 }
 
 Player.prototype.update = function() {
-    console.log('implement player update');
+    var playerStoneCell = [];
+    var enemyStoneCell = [];
+
+    if (this.y < 63) { //check if player falls into water
+        this.reset();
+    }
+    //check for collision with bug
+    playerStoneCell = getStoneCell(this.x, this.y);
+    for (var i=0; i < allEnemies.length; i++) {
+        enemyStoneCell = getStoneCell(allEnemies[i].x, allEnemies[i].y);
+        if (playerStoneCell[0] == enemyStoneCell[0] && playerStoneCell[1] == enemyStoneCell[1]) {
+            this.reset();
+            console.log('reset from StoneCell overlap');
+        }
+    }
+};
+
+Player.prototype.reset = function() {
+    this.x = PLAYER_START_LOC[0];
+    this.y = PLAYER_START_LOC[1];
 };
 
 // Now instantiate your objects.
@@ -88,11 +136,11 @@ var enemy1 = new Enemy(0, ENEMY_HEIGHTS[getRandomInt(0, 3)]);
 //var enemy2 = new Enemy();
 allEnemies.push(enemy1);
 //allEnemies.push(enemy2);
-//var myPlayer = Player(505 / 2, 606 - 83);
-var player = new Player(252, 400);
-console.log(player.sprite);
-console.log(player.x);
-console.log(player.y);
+var player = new Player(PLAYER_START_LOC[0], PLAYER_START_LOC[1]);
+//player.sprite = PLAYER_IMAGE;
+//console.log(player.sprite);
+//console.log(player.x);
+//console.log(player.y);
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
