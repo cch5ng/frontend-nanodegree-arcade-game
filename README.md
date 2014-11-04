@@ -1,6 +1,14 @@
 frontend-nanodegree-arcade-game
 ===============================
 
-Students should use this rubric: https://www.udacity.com/course/viewer#!/c-ud015/l-3072058665/m-3072588797
+Game Rules
 
-for self-checking their submission.
+Your goal is to collect as many prizes from the street as possible. Prizes include: Hearts, Stars, and Keys.
+
+You must avoid the following:
+	-Contact with a bug
+	-Crossing into the water
+
+If you do any of the above, you will have to start from the beginning position again and you will lose one life.
+
+The game ends when you lose all over your lives.
