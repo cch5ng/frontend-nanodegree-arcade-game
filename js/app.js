@@ -2,8 +2,9 @@
 var CANVAS_DIMENSIONS = [505, 606];
 var ENEMY_HEIGHTS = [63, 146, 229];
 //var ENEMY_VELOCITY = 50;//[20, 75] ... might want to make an array indicating min and max velocity
-var ENEMY_IMAGE = 'images/enemy-bug.png';
+var ENEMY_IMAGE = ['images/enemy-bug-grn.png', 'images/enemy-bug-org.png', 'images/enemy-bug-prp.png'];
 var PLAYER_IMAGE = 'images/char-cat-girl.png';
+var PRIZE_IMAGE = ['images/Heart.png', 'images/Key.png', 'images/Star.png'];
 var PLAYER_START_LOC = [202, 405];
 var PLAYER_MOVE = [101, 83];
 //var MAX_ENEMIES = 8;
@@ -41,20 +42,49 @@ function getStoneCell(x, y) {
 //might want to think about function that tracks number of active enemies
 //should probably also spawn additional enemies if below the max allowed num enemies
 
-// Enemies our player must avoid
-var Enemy = function(x, y) { //(0, ENEMY_HEIGHTS[getRandomInt(0, 3)])
+//common aspects among all objects (enemies, player, prizes)
+//position x and y values
+//sprite url
+//render function
+//they would each have unique update and reset functions
+
+//superclass
+var DynamicElement = function(x, y) {
+    this.x = x;
+    this.y = y;
+    this.sprite = '';
+};
+
+DynamicElement.prototype.render = function() {
+    if (lives > 0) {
+        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    }
+};
+
+// (subclass) Enemies our player must avoid
+var Enemy = function(x, y) {
+    DynamicElement.call(this, x, y);
+    this.sprite = ENEMY_IMAGE[getRandomInt(0, 3)];
+    this.velocity = getRandomInt(25, 76);
+};
+
+Enemy.prototype = Object.create(DynamicElement.prototype);
+Enemy.prototype.constructor = Enemy;
+
+
+//var Enemy = function(x, y) { //(0, ENEMY_HEIGHTS[getRandomInt(0, 3)])
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
 
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
-    var velocity = getRandomInt(25, 76);
+//    var velocity = getRandomInt(25, 76);
     //console.log('velocity: ' + velocity);
-    this.x = x;
-    this.y = y;
-    this.sprite = ENEMY_IMAGE;
-    this.velocity = velocity;
-};
+//    this.x = x;
+//    this.y = y;
+//    this.sprite = ENEMY_IMAGE[getRandomInt(0, 3)];
+//    this.velocity = velocity;
+//};
 
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
@@ -68,38 +98,32 @@ Enemy.prototype.update = function(dt) {
     }
     if (this.x > CANVAS_DIMENSIONS[0]) {
         this.reset();
-        //setTimeout(this.reset(), getRandomInt(1000, 21000));
     }
 }
 
 // Draw the enemy on the screen, required method for game
-Enemy.prototype.render = function() {
-    if (lives > 0) {
-        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-    }
-}
+//Enemy.prototype.render = function() {
+//    if (lives > 0) {
+//        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+//    }
+//}
 
-//TODO
 Enemy.prototype.reset = function() {
     this.x = 0;
     this.y = ENEMY_HEIGHTS[getRandomInt(0, 3)];
     this.velocity = getRandomInt(25, 76);
-    //console.log('reset velocity: ' + this.velocity);
-    //console.log('implement reset')
 }
 
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
-// TODO try implement as pseudo classical constructor
-//constructor for Player is messed up
-
+//subclass
 var Player = function(x, y) {
-    Enemy.call(this, x, y);
+    DynamicElement.call(this, x, y);
     this.sprite = PLAYER_IMAGE;
 };
 
-Player.prototype = Object.create(Enemy.prototype);
+Player.prototype = Object.create(DynamicElement.prototype);
 Player.prototype.constructor = Player;
 
 Player.prototype.handleInput = function(direction) {
@@ -144,22 +168,23 @@ Player.prototype.reset = function() {
     this.y = PLAYER_START_LOC[1];
 };
 
+//subclass
+var Prize = function(x, y) {
+    DynamicElement.call(this, x, y);
+    this.sprite = PRIZE_IMAGE[getRandomInt(0, 3)];
+};
+Prize.prototype = Object.create(DynamicElement.prototype);
+Prize.prototype.constructor = Prize;
+
 var Text = function() { //text to render like lives and score
     this.render = function() {
-        var metrics = ctx.measureText(LIVES_TXT);
-        //console.log('clear rect x: ' + (CANVAS_DIMENSIONS[0] - metrics.width).toString());
-        //console.log('clear rect width: ' + metrics.width);
-        //ctx.rect(CANVAS_DIMENSIONS[0] - metrics.width, 10, metrics.width, 20);
-        //ctx.strokeStyle = 'blue';
-        //ctx.stroke();
-        ctx.clearRect(CANVAS_DIMENSIONS[0] - metrics.width, 0, metrics.width, 35);
-        ctx.fillText(LIVES_TXT, CANVAS_DIMENSIONS[0] - metrics.width, 30);
+        var metrics = ctx.measureText(LIVES_TXT); //LIVES_TXT might need to be a param for the constructor
+        ctx.clearRect(CANVAS_DIMENSIONS[0] - metrics.width, 0, metrics.width, 43);
+        ctx.fillText(LIVES_TXT, CANVAS_DIMENSIONS[0] - metrics.width, 40);
     }
-    this.update = function() {
+    this.update = function() { //not completely sure why this was necessary but otherwise lives count would not update onscreen
         var curLives = lives;
         LIVES_TXT = 'Lives ' + curLives;
-//        ctx.clearRect(CANVAS_DIMENSIONS[0] - metrics.width, 30, metrics.width, metrics.height);
-//        ctx.fillText('Lives ' + curLives, CANVAS_DIMENSIONS[0] - metrics.width, 30);
     }
 };
 
@@ -173,6 +198,8 @@ for (var j = 0; j < 4; j++) { //MAX_ENEMIES
     var enemy = new Enemy(0, ENEMY_HEIGHTS[getRandomInt(0, 3)]);
     allEnemies.push(enemy);
 }
+
+var prize = new Prize(303, 155);
 
 var livesText = new Text();
 

@@ -9,7 +9,7 @@ var Engine = (function(global) {
     canvas.width = 505;
     canvas.height = 606;
     doc.body.appendChild(canvas);
-    ctx.font = "30pt Arial";
+    ctx.font = "30pt Arial"; //lives, score
 
     function main() {
         var now = Date.now(),
@@ -20,6 +20,7 @@ var Engine = (function(global) {
 
         lastTime = now;
         win.requestAnimationFrame(main);
+
     };
 
     function init() {
@@ -67,6 +68,7 @@ var Engine = (function(global) {
             enemy.render();
         });
         player.render();
+        prize.render();
         livesText.render();
         console.log('render text');
     }
@@ -81,7 +83,13 @@ var Engine = (function(global) {
         'images/grass-block.png',
         'images/enemy-bug.png',
         'images/char-boy.png',
-        'images/char-cat-girl.png'
+        'images/char-cat-girl.png',
+        'images/enemy-bug-grn.png',
+        'images/enemy-bug-org.png',
+        'images/enemy-bug-prp.png',
+        'images/Heart.png',
+        'images/Key.png',
+        'images/Star.png'
     ]);
     Resources.onReady(init);
 
