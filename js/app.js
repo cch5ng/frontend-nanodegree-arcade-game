@@ -1,15 +1,16 @@
 //global vars
 var CANVAS_DIMENSIONS = [505, 606];
 var ENEMY_HEIGHTS = [63, 146, 229];
-//var ENEMY_VELOCITY = 50;//[20, 75] ... might want to make an array indicating min and max velocity
 var ENEMY_IMAGE = ['images/enemy-bug-grn.png', 'images/enemy-bug-org.png', 'images/enemy-bug-prp.png'];
 var PLAYER_IMAGE = 'images/char-cat-girl.png';
 var PRIZE_IMAGE = ['images/Heart.png', 'images/Key.png', 'images/Star.png'];
+var ENEMY_VELOCITY = [25, 90];
 var PLAYER_START_LOC = [202, 405];
 var PLAYER_MOVE = [101, 83];
-//var MAX_ENEMIES = 8;
-//var score = 0; //want to add points for prizes
-var lives = 3; //want to subtract lives when collide with bugs
+var PRIZE_X = [0, 101, 202, 303, 404];
+var PRIZE_Y = [72, 155, 238];
+var score = 0;
+var lives = 3;
 var LIVES_TXT = 'Lives ' + lives;
 
 //helper functions
@@ -38,16 +39,6 @@ function getStoneCell(x, y) {
 }
 
 //classes
-
-//might want to think about function that tracks number of active enemies
-//should probably also spawn additional enemies if below the max allowed num enemies
-
-//common aspects among all objects (enemies, player, prizes)
-//position x and y values
-//sprite url
-//render function
-//they would each have unique update and reset functions
-
 //superclass
 var DynamicElement = function(x, y) {
     this.x = x;
@@ -65,26 +56,11 @@ DynamicElement.prototype.render = function() {
 var Enemy = function(x, y) {
     DynamicElement.call(this, x, y);
     this.sprite = ENEMY_IMAGE[getRandomInt(0, 3)];
-    this.velocity = getRandomInt(25, 76);
+    this.velocity = getRandomInt(ENEMY_VELOCITY[0], ENEMY_VELOCITY[1]);
 };
 
 Enemy.prototype = Object.create(DynamicElement.prototype);
 Enemy.prototype.constructor = Enemy;
-
-
-//var Enemy = function(x, y) { //(0, ENEMY_HEIGHTS[getRandomInt(0, 3)])
-    // Variables applied to each of our instances go here,
-    // we've provided one for you to get started
-
-    // The image/sprite for our enemies, this uses
-    // a helper we've provided to easily load images
-//    var velocity = getRandomInt(25, 76);
-    //console.log('velocity: ' + velocity);
-//    this.x = x;
-//    this.y = y;
-//    this.sprite = ENEMY_IMAGE[getRandomInt(0, 3)];
-//    this.velocity = velocity;
-//};
 
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
@@ -94,24 +70,17 @@ Enemy.prototype.update = function(dt) {
     // all computers.
 //why can't I access Engine.canvas.width
     if (this.x < CANVAS_DIMENSIONS[0] + 101) {
-        this.x += this.velocity * dt; //ENEMY_VELOCITY 
+        this.x += this.velocity * dt;
     }
     if (this.x > CANVAS_DIMENSIONS[0]) {
         this.reset();
     }
 }
 
-// Draw the enemy on the screen, required method for game
-//Enemy.prototype.render = function() {
-//    if (lives > 0) {
-//        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-//    }
-//}
-
 Enemy.prototype.reset = function() {
     this.x = 0;
     this.y = ENEMY_HEIGHTS[getRandomInt(0, 3)];
-    this.velocity = getRandomInt(25, 76);
+    this.velocity = getRandomInt(ENEMY_VELOCITY[0], ENEMY_VELOCITY[1]);
 }
 
 // Now write your own player class
@@ -147,6 +116,7 @@ Player.prototype.handleInput = function(direction) {
 Player.prototype.update = function() {
     var playerStoneCell = [];
     var enemyStoneCell = [];
+    var prizeStoneCell = [];
 
     if (this.y < 63) { //check if player falls into water
         this.reset();
@@ -161,6 +131,13 @@ Player.prototype.update = function() {
             lives -= 1;
         }
     }
+    //check for collision with prize
+    prizeStoneCell = getStoneCell(prize.x, prize.y);
+    if (playerStoneCell[0] == prizeStoneCell[0] && playerStoneCell[1] == prizeStoneCell[1]) {
+        prize.reset();
+        score += 1;
+    }
+
 };
 
 Player.prototype.reset = function() {
@@ -176,16 +153,19 @@ var Prize = function(x, y) {
 Prize.prototype = Object.create(DynamicElement.prototype);
 Prize.prototype.constructor = Prize;
 
-var Text = function() { //text to render like lives and score
-    this.render = function() {
-        var metrics = ctx.measureText(LIVES_TXT); //LIVES_TXT might need to be a param for the constructor
-        ctx.clearRect(CANVAS_DIMENSIONS[0] - metrics.width, 0, metrics.width, 43);
-        ctx.fillText(LIVES_TXT, CANVAS_DIMENSIONS[0] - metrics.width, 40);
-    }
-    this.update = function() { //not completely sure why this was necessary but otherwise lives count would not update onscreen
-        var curLives = lives;
-        LIVES_TXT = 'Lives ' + curLives;
-    }
+Prize.prototype.reset = function() {
+    this.x = PRIZE_X[getRandomInt(0, 5)];
+    this.y = PRIZE_Y[getRandomInt(0, 3)];;
+    this.sprite = PRIZE_IMAGE[getRandomInt(0, 3)];
+};
+
+var Text = function(str, num) { //text to render lives and score
+    this.str = str;
+    this.displayStr = this.str + ' ' + num.toString();
+};
+
+Text.prototype.update = function(curCount) { //not completely sure why this was necessary but otherwise lives count would not update onscreen
+    this.displayStr = this.str + ' ' + curCount.toString();
 };
 
 // Now instantiate your objects.
@@ -194,14 +174,25 @@ var Text = function() { //text to render like lives and score
 var player = new Player(PLAYER_START_LOC[0], PLAYER_START_LOC[1]);
 var allEnemies = [];
 
-for (var j = 0; j < 4; j++) { //MAX_ENEMIES
+for (var j = 0; j < 5; j++) { //MAX_ENEMIES
     var enemy = new Enemy(0, ENEMY_HEIGHTS[getRandomInt(0, 3)]);
     allEnemies.push(enemy);
 }
 
 var prize = new Prize(303, 155);
+var livesText = new Text('Lives', lives);
+var scoreText = new Text('Score', score);
+scoreText.render = function() {
+    var metrics = ctx.measureText(this.displayStr);
+    ctx.clearRect(0, 0, metrics.width, 43);
+    ctx.fillText(this.displayStr, 0, 40);
+};
 
-var livesText = new Text();
+livesText.render = function() {
+    var metrics = ctx.measureText(this.displayStr); //defined separate from Text class to align Lives to the right
+    ctx.clearRect(CANVAS_DIMENSIONS[0] - metrics.width, 0, metrics.width, 43);
+    ctx.fillText(this.displayStr, CANVAS_DIMENSIONS[0] - metrics.width, 40);
+};
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.

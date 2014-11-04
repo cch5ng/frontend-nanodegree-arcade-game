@@ -40,7 +40,8 @@ var Engine = (function(global) {
             enemy.update(dt);
         });
         player.update();
-        livesText.update();
+        scoreText.update(score);
+        livesText.update(lives);
     }
 
     function render() {
@@ -69,8 +70,9 @@ var Engine = (function(global) {
         });
         player.render();
         prize.render();
+        scoreText.render();
         livesText.render();
-        console.log('render text');
+        //console.log('render text');
     }
 
     function reset() {
