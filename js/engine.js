@@ -40,6 +40,7 @@ var Engine = (function(global) {
             enemy.update(dt);
         });
         player.update();
+        audioIcon.update();
         scoreText.update(score);
         livesText.update(lives);
     }
@@ -55,7 +56,8 @@ var Engine = (function(global) {
             ],
             numRows = 6,
             numCols = 5,
-            row, col;
+            row, col,
+            micPath = 'images/mic50x50.jpg';
         for (row = 0; row < numRows; row++) {
             for (col = 0; col < numCols; col++) {
                 ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
@@ -70,9 +72,9 @@ var Engine = (function(global) {
         });
         player.render();
         prize.render();
+        audioIcon.render();
         scoreText.render();
         livesText.render();
-        //console.log('render text');
     }
 
     function reset() {
@@ -91,7 +93,9 @@ var Engine = (function(global) {
         'images/enemy-bug-prp.png',
         'images/Heart.png',
         'images/Key.png',
-        'images/Star.png'
+        'images/Star.png',
+        'images/mic50x50.jpg',
+        'images/mic_grey.jpg'
     ]);
     Resources.onReady(init);
 

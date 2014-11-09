@@ -4,6 +4,7 @@ var ENEMY_HEIGHTS = [63, 146, 229];
 var ENEMY_IMAGE = ['images/enemy-bug-grn.png', 'images/enemy-bug-org.png', 'images/enemy-bug-prp.png'];
 var PLAYER_IMAGE = 'images/char-cat-girl.png';
 var PRIZE_IMAGE = ['images/Heart.png', 'images/Key.png', 'images/Star.png'];
+var MIC_IMAGE = ['images/mic50x50.jpg', 'images/mic_grey.jpg']; //first image for audio player on, second image for off
 var ENEMY_VELOCITY = [25, 90];
 var PLAYER_START_LOC = [202, 405];
 var PLAYER_MOVE = [101, 83];
@@ -159,6 +160,37 @@ Prize.prototype.reset = function() {
     this.sprite = PRIZE_IMAGE[getRandomInt(0, 3)];
 };
 
+//subclass
+//TODO define audio icon
+//properties x, y, sprite, on - boolean
+//functions render, update (if on, sprite is black if not on, sprite is grey), needs associate with eventlistener (currently located in engine.js)
+//also associate with the audio element in html, want to be able to toggle playing on or off (or should it toggle the volume only?)
+
+var AudioIcon = function(x, y) {
+    DynamicElement.call(this, x, y);
+    this.sprite = '';
+    this.on = 1;
+}
+
+AudioIcon.prototype = Object.create(DynamicElement.prototype);
+AudioIcon.prototype.constructor = AudioIcon;
+
+AudioIcon.prototype.update = function() {
+    if (this.on > 0) {
+        this.sprite = 'images/mic50x50.jpg';
+        document.getElementById("bgdAudio").play();
+    } else { // pause audio player
+        this.sprite = 'images/mic_grey.jpg';
+        document.getElementById("bgdAudio").pause();
+    }
+};
+
+AudioIcon.prototype.togglePlay = function() {
+    this.on *= -1;
+        //toggle audio element play or pause
+};
+
+
 var Text = function(str, num) { //text to render lives and score
     this.str = str;
     this.displayStr = this.str + ' ' + num.toString();
@@ -193,6 +225,7 @@ livesText.render = function() {
     ctx.clearRect(CANVAS_DIMENSIONS[0] - metrics.width, 0, metrics.width, 43);
     ctx.fillText(this.displayStr, CANVAS_DIMENSIONS[0] - metrics.width, 40);
 };
+var audioIcon = new AudioIcon(CANVAS_DIMENSIONS[0] - 170, 0, 38, 38);
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
@@ -206,3 +239,23 @@ document.addEventListener('keyup', function(e) {
 
     player.handleInput(allowedKeys[e.keyCode]);
 });
+
+document.addEventListener('click', function(e) {
+    var myCanvas = document.querySelector('canvas');
+    //if mouse coordinates overlap with the mic icon then update the icon with a greyed out image
+    var mPos = getMousePos(myCanvas, e);
+    //console.log('x: ' + mPos.x);
+    //console.log('y: ' + mPos.y);
+    if (mPos.x >= myCanvas.width - 170 && mPos.x <= myCanvas.width - 132 && mPos.y >= 10 && mPos.y <= 48) {
+        console.log('user clicked on mic');
+        audioIcon.togglePlay();
+    }
+});
+
+function getMousePos(canvas, evt) {
+    var rect = canvas.getBoundingClientRect();
+    return {
+        x: evt.clientX - rect.left,
+        y: evt.clientY - rect.top
+    };
+}
