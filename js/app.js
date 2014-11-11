@@ -115,14 +115,17 @@ Player.prototype.handleInput = function(direction) {
 }
 
 Player.prototype.update = function() {
-    var playerStoneCell = [];
-    var enemyStoneCell = [];
-    var prizeStoneCell = [];
-
     if (this.y < 63) { //check if player falls into water
         this.reset();
         lives -= 1;
     }
+};
+
+Player.prototype.checkCollisions = function() {
+    var playerStoneCell = [];
+    var enemyStoneCell = [];
+    var prizeStoneCell = [];
+
     //check for collision with bug
     playerStoneCell = getStoneCell(this.x, this.y);
     for (var i=0; i < allEnemies.length; i++) {
@@ -138,7 +141,6 @@ Player.prototype.update = function() {
         prize.reset();
         score += 1;
     }
-
 };
 
 Player.prototype.reset = function() {

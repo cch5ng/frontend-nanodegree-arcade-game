@@ -39,6 +39,7 @@ var Engine = (function(global) {
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
         });
+        player.checkCollisions();
         player.update();
         audioIcon.update();
         scoreText.update(score);
