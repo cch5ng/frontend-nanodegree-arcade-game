@@ -79,7 +79,7 @@ Enemy.prototype.update = function(dt) {
 }
 
 Enemy.prototype.reset = function() {
-    this.x = 0;
+    this.x = getRandomInt(-500, 1);
     this.y = ENEMY_HEIGHTS[getRandomInt(0, 3)];
     this.velocity = getRandomInt(ENEMY_VELOCITY[0], ENEMY_VELOCITY[1]);
 }
@@ -225,7 +225,7 @@ livesText.render = function() {
     ctx.clearRect(CANVAS_DIMENSIONS[0] - metrics.width, 0, metrics.width, 43);
     ctx.fillText(this.displayStr, CANVAS_DIMENSIONS[0] - metrics.width, 40);
 };
-var audioIcon = new AudioIcon(CANVAS_DIMENSIONS[0] - 170, 0, 38, 38);
+var audioIcon = new AudioIcon(CANVAS_DIMENSIONS[0] - 180, 0, 38, 38);
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
@@ -244,15 +244,12 @@ document.addEventListener('click', function(e) {
     var myCanvas = document.querySelector('canvas');
     //if mouse coordinates overlap with the mic icon then update the icon with a greyed out image
     var mPos = getMousePos(myCanvas, e);
-    //console.log('x: ' + mPos.x);
-    //console.log('y: ' + mPos.y);
     if (mPos.x >= myCanvas.width - 170 && mPos.x <= myCanvas.width - 132 && mPos.y >= 10 && mPos.y <= 48) {
-        console.log('user clicked on mic');
         audioIcon.togglePlay();
     }
 });
 
-function getMousePos(canvas, evt) {
+function getMousePos(canvas, evt) { //corrects for the white rectangle around the canvas
     var rect = canvas.getBoundingClientRect();
     return {
         x: evt.clientX - rect.left,
