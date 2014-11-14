@@ -5,11 +5,15 @@ Game Rules
 
 Your goal is to collect as many prizes from the street as possible. Prizes include: Hearts, Stars, and Keys.
 
-Move up or down using the up arrow or down arrow keys. Move left or right using the left arrow or right arrow keys.
+Game Controls:<br/>
+Move up by using the up arrow key.<br/>
+Move down by using the down arrow key.<br/>
+Move left by using the left arrow key.<br/>
+Move right by using the right arrow key.<br/>
 
-You must avoid the following:
-	-Contact with a bug
-	-Crossing into the water
+You must avoid the following:<br/>
+-Contact with a bug<br/>
+-Crossing into the water<br/>
 
 If you do any of the above, you will have to start from the beginning position again and you will lose one life.
 
