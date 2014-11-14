@@ -12,7 +12,7 @@ var PRIZE_X = [0, 101, 202, 303, 404];
 var PRIZE_Y = [72, 155, 238];
 var score = 0;
 var lives = 3;
-var LIVES_TXT = 'Lives ' + lives;
+//var LIVES_TXT = 'Lives ' + lives;
 
 //helper functions
 function getRandomInt(min, max) { //note that max is non inclusive or resulting max becomes max - 1
@@ -76,13 +76,13 @@ Enemy.prototype.update = function(dt) {
     if (this.x > CANVAS_DIMENSIONS[0]) {
         this.reset();
     }
-}
+};
 
 Enemy.prototype.reset = function() {
     this.x = getRandomInt(-500, 1);
     this.y = ENEMY_HEIGHTS[getRandomInt(0, 3)];
     this.velocity = getRandomInt(ENEMY_VELOCITY[0], ENEMY_VELOCITY[1]);
-}
+};
 
 // Now write your own player class
 // This class requires an update(), render() and
@@ -112,7 +112,7 @@ Player.prototype.handleInput = function(direction) {
             this.y += PLAYER_MOVE[1];
         }
     }
-}
+};
 
 Player.prototype.update = function() {
     if (this.y < 63) { //check if player falls into water
@@ -158,7 +158,7 @@ Prize.prototype.constructor = Prize;
 
 Prize.prototype.reset = function() {
     this.x = PRIZE_X[getRandomInt(0, 5)];
-    this.y = PRIZE_Y[getRandomInt(0, 3)];;
+    this.y = PRIZE_Y[getRandomInt(0, 3)];
     this.sprite = PRIZE_IMAGE[getRandomInt(0, 3)];
 };
 
@@ -172,7 +172,7 @@ var AudioIcon = function(x, y) {
     DynamicElement.call(this, x, y);
     this.sprite = '';
     this.on = 1;
-}
+};
 
 AudioIcon.prototype = Object.create(DynamicElement.prototype);
 AudioIcon.prototype.constructor = AudioIcon;

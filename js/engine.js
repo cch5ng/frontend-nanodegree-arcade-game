@@ -21,7 +21,7 @@ var Engine = (function(global) {
         lastTime = now;
         win.requestAnimationFrame(main);
 
-    };
+    }
 
     function init() {
 
