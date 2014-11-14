@@ -12,16 +12,28 @@ var PRIZE_X = [0, 101, 202, 303, 404];
 var PRIZE_Y = [72, 155, 238];
 var score = 0;
 var lives = 3;
-//var LIVES_TXT = 'Lives ' + lives;
 
 //helper functions
-function getRandomInt(min, max) { //note that max is non inclusive or resulting max becomes max - 1
+/**
+ * Random integer generator
+ * @param {integer} min - Minimum range of the resulting random number (inclusive).
+ * @param {integer} max - Maximum range of the resulting random number (exclusive). Essentially the maximum will be max - 1.
+ * @returns {integer} - Random number between min and (max - 1), inclusive.
+ */
+function getRandomInt(min, max) { 
     return Math.floor(Math.random() * (max - min)) + min;
 }
 
+/**
+ * Use to determine enemy-player collisions. Each stone is considered a cell in a grid.
+ * If the player and enemy are in the same cell simultaneously, a collision will be detected in Player's checkCollisions() function.
+ * @param {integer} x - X position of the current item (i.e. bug, player, prize)
+ * @param {integer} y - Y position of the current item
+ * @returns {array of integers} - The first element of the array represents the column number for the item location on the stones. 
+       The second element represents the row number for the item location on the stones.
+       If the item is not on any stone, the return value will be [-1, -1].
+ */
 function getStoneCell(x, y) {
-//used to determine enemy-player collisions, where each stone is considered a cell in a grid
-//if the player and enemy are in the same cell simultaneously, a collision will be detected in Player's update() funct
     var stoneCell = [];
     var cellx = -1;
     var celly = -1;
@@ -40,20 +52,31 @@ function getStoneCell(x, y) {
 }
 
 //classes
-//superclass
+/**
+ * Represents an element which is dynamic. Superclass to elements such as player, enemy, prizes.
+ * @constructor
+ * @param {integer} x - initial X position for the element
+ * @param {integer} x - initial Y position for the element
+ */
 var DynamicElement = function(x, y) {
     this.x = x;
     this.y = y;
-    this.sprite = '';
+    this.sprite = ''; //url for the image
 };
 
+/** Renders a dynamic element */
 DynamicElement.prototype.render = function() {
     if (lives > 0) {
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     }
 };
 
-// (subclass) Enemies our player must avoid
+/**
+ * Enemies our player must avoid
+ * @constructor
+ * @param {integer} x - initial X position for the element
+ * @param {integer} x - initial Y position for the element
+ */
 var Enemy = function(x, y) {
     DynamicElement.call(this, x, y);
     this.sprite = ENEMY_IMAGE[getRandomInt(0, 3)];
@@ -63,13 +86,14 @@ var Enemy = function(x, y) {
 Enemy.prototype = Object.create(DynamicElement.prototype);
 Enemy.prototype.constructor = Enemy;
 
-// Update the enemy's position, required method for game
-// Parameter: dt, a time delta between ticks
+/**
+ * Update the enemy's position, required method for game
+ * @param {integer} dt - a time delta between ticks
+ */
 Enemy.prototype.update = function(dt) {
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
-//why can't I access Engine.canvas.width
     if (this.x < CANVAS_DIMENSIONS[0] + 101) {
         this.x += this.velocity * dt;
     }
@@ -78,24 +102,37 @@ Enemy.prototype.update = function(dt) {
     }
 };
 
+/**
+ * Reset the enemy's position after it has moved off the right edge. Gives a random velocity and initial position.
+ * @param {integer} dt - a time delta between ticks
+ */
 Enemy.prototype.reset = function() {
-    this.x = getRandomInt(-500, 1);
+    this.x = getRandomInt(-500, 1); //staggers the timing when the bug will reappear on the screen
     this.y = ENEMY_HEIGHTS[getRandomInt(0, 3)];
     this.velocity = getRandomInt(ENEMY_VELOCITY[0], ENEMY_VELOCITY[1]);
 };
 
-// Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
-//subclass
+/**
+ * Represents the game player
+ * @constructor
+ * @param {integer} x - initial X position for the element
+ * @param {integer} x - initial Y position for the element
+ */
 var Player = function(x, y) {
     DynamicElement.call(this, x, y);
-    this.sprite = PLAYER_IMAGE;
+    this.sprite = PLAYER_IMAGE; //path for the player image
 };
 
 Player.prototype = Object.create(DynamicElement.prototype);
 Player.prototype.constructor = Player;
 
+/** 
+ * Handles key inputs for player controls. Moves the player by one grid cell value in the given direction.
+ * Prevents the player from moving off the screen when moving near the left edge, right edge, or bottom edge.
+ * @param {string} direction - Values may be 'left', 'right', 'up', or 'down' and correspond to key inputs.
+ */
 Player.prototype.handleInput = function(direction) {
     if (direction == 'left') {
         if (this.x - PLAYER_MOVE[0] >= 0) { //checks that player can't move off screen left
@@ -114,13 +151,19 @@ Player.prototype.handleInput = function(direction) {
     }
 };
 
+/** If the player falls into the water, calls the player's reset() function and decrements the lives count by 1.*/
 Player.prototype.update = function() {
-    if (this.y < 63) { //check if player falls into water
+    if (this.y < 63) {
         this.reset();
         lives -= 1;
     }
 };
 
+/** 
+ * Checks whether the player has collided with any bug or prize. If there is a collision with a bug, the player's reset() will be
+       called and the lives count will be decremented by 1. If there is a collision with a prize, the prize's reset() will be 
+       called and the score will be incremented by 1.
+ */
 Player.prototype.checkCollisions = function() {
     var playerStoneCell = [];
     var enemyStoneCell = [];
@@ -143,40 +186,52 @@ Player.prototype.checkCollisions = function() {
     }
 };
 
+/** Updates the player to its starting position.*/
 Player.prototype.reset = function() {
     this.x = PLAYER_START_LOC[0];
     this.y = PLAYER_START_LOC[1];
 };
 
-//subclass
-var Prize = function(x, y) {
+/**
+ * Represents a prize, such as heart or star.
+ * @constructor
+ * @param {integer} x - initial X position for the element
+ * @param {integer} x - initial Y position for the element
+ */
+ var Prize = function(x, y) {
     DynamicElement.call(this, x, y);
-    this.sprite = PRIZE_IMAGE[getRandomInt(0, 3)];
+    this.sprite = PRIZE_IMAGE[getRandomInt(0, 3)]; //gets a random image path
 };
 Prize.prototype = Object.create(DynamicElement.prototype);
 Prize.prototype.constructor = Prize;
 
+/** After the player has collected a prize, the prize is reset with a new, random location and random image.*/
 Prize.prototype.reset = function() {
     this.x = PRIZE_X[getRandomInt(0, 5)];
     this.y = PRIZE_Y[getRandomInt(0, 3)];
     this.sprite = PRIZE_IMAGE[getRandomInt(0, 3)];
 };
 
-//subclass
-//TODO define audio icon
-//properties x, y, sprite, on - boolean
-//functions render, update (if on, sprite is black if not on, sprite is grey), needs associate with eventlistener (currently located in engine.js)
-//also associate with the audio element in html, want to be able to toggle playing on or off (or should it toggle the volume only?)
-
+/**
+ * Represents the audio icon.
+ * @constructor
+ * @param {integer} x - Initial X position for the element
+ * @param {integer} x - Initial Y position for the element
+ * @property {integer} on - If the value is 1, the audio player should be on. If the value is -1, the audio player should be paused.
+ */
 var AudioIcon = function(x, y) {
     DynamicElement.call(this, x, y);
-    this.sprite = '';
+    this.sprite = ''; //url to the image
     this.on = 1;
 };
 
 AudioIcon.prototype = Object.create(DynamicElement.prototype);
 AudioIcon.prototype.constructor = AudioIcon;
 
+/** 
+ * Toggles the audio player to play or pause depending on the this.on property value. When paused, the image should display in grey. 
+ * When playing, the image should display in black.
+ */
 AudioIcon.prototype.update = function() {
     if (this.on > 0) {
         this.sprite = 'images/mic50x50.jpg';
@@ -187,28 +242,34 @@ AudioIcon.prototype.update = function() {
     }
 };
 
+/** Called by a click event listener so that when the player clicks the audio icon, it will toggle the this.on value.*/
 AudioIcon.prototype.togglePlay = function() {
-    this.on *= -1;
-        //toggle audio element play or pause
+    this.on *= -1; //toggle audio element to play or pause
 };
 
-
-var Text = function(str, num) { //text to render lives and score
+/**
+ * Represents a text element. Used for the score and lives count.
+ * @constructor
+ * @param {string} str - Static part of the text element
+ * @param {integer} num - Numeric part of the text element. For ex. lives count or score value.
+ */
+var Text = function(str, num) {
     this.str = str;
     this.displayStr = this.str + ' ' + num.toString();
 };
 
+/** Updates the text element with the latest relevant numeric count (for lives or score).*/
 Text.prototype.update = function(curCount) { //not completely sure why this was necessary but otherwise lives count would not update onscreen
     this.displayStr = this.str + ' ' + curCount.toString();
 };
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
-// ??Place the player object in a variable called player
+// Place the player object in a variable called player
 var player = new Player(PLAYER_START_LOC[0], PLAYER_START_LOC[1]);
 var allEnemies = [];
 
-for (var j = 0; j < 5; j++) { //MAX_ENEMIES
+for (var j = 0; j < 5; j++) {
     var enemy = new Enemy(0, ENEMY_HEIGHTS[getRandomInt(0, 3)]);
     allEnemies.push(enemy);
 }
@@ -216,21 +277,26 @@ for (var j = 0; j < 5; j++) { //MAX_ENEMIES
 var prize = new Prize(303, 155);
 var livesText = new Text('Lives', lives);
 var scoreText = new Text('Score', score);
+
+/** Renders the Score at the left edge.*/
 scoreText.render = function() {
     var metrics = ctx.measureText(this.displayStr);
     ctx.clearRect(0, 0, metrics.width, 43);
     ctx.fillText(this.displayStr, 0, 40);
 };
 
+/** Renders the Lives at the right edge.*/
 livesText.render = function() {
-    var metrics = ctx.measureText(this.displayStr); //defined separate from Text class to align Lives to the right
+    var metrics = ctx.measureText(this.displayStr);
     ctx.clearRect(CANVAS_DIMENSIONS[0] - metrics.width, 0, metrics.width, 43);
     ctx.fillText(this.displayStr, CANVAS_DIMENSIONS[0] - metrics.width, 40);
 };
+
 var audioIcon = new AudioIcon(CANVAS_DIMENSIONS[0] - 180, 0, 38, 38);
 
-// This listens for key presses and sends the keys to your
-// Player.handleInput() method. You don't need to modify this.
+/**This listens for key presses and sends the keys to your
+ *     Player.handleInput() method. You don't need to modify this.
+ */
 document.addEventListener('keyup', function(e) {
     var allowedKeys = {
         37: 'left',
@@ -242,16 +308,17 @@ document.addEventListener('keyup', function(e) {
     player.handleInput(allowedKeys[e.keyCode]);
 });
 
+/** Listens for mouse clicks on the audio icon. */
 document.addEventListener('click', function(e) {
     var myCanvas = document.querySelector('canvas');
-    //if mouse coordinates overlap with the mic icon then update the icon with a greyed out image
     var mPos = getMousePos(myCanvas, e);
     if (mPos.x >= myCanvas.width - 170 && mPos.x <= myCanvas.width - 132 && mPos.y >= 10 && mPos.y <= 48) {
         audioIcon.togglePlay();
     }
 });
 
-function getMousePos(canvas, evt) { //corrects for the white rectangle around the canvas
+/** Gets the mouse position relative to the canvas. Corrects for the white rectangle around the canvas.*/
+function getMousePos(canvas, evt) {
     var rect = canvas.getBoundingClientRect();
     return {
         x: evt.clientX - rect.left,
