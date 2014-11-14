@@ -1,21 +1,23 @@
 frontend-nanodegree-arcade-game
 ===============================
 
-Game Rules
+<h1>Game Rules</h1>
 
 Your goal is to collect as many prizes from the street as possible. Prizes include: Hearts, Stars, and Keys.
 
-Game Controls:<br/>
-Move up by using the up arrow key.<br/>
-Move down by using the down arrow key.<br/>
-Move left by using the left arrow key.<br/>
-Move right by using the right arrow key.<br/>
+<b>Game Controls:</b>
+<ul>
+  <li>Move up by using the up arrow key.</li>
+  <li>Move down by using the down arrow key.</li>
+  <li>Move left by using the left arrow key.</li>
+  <li>Move right by using the right arrow key.</li>
+</ul>
 
-You must avoid the following:<br/>
--Contact with a bug<br/>
--Crossing into the water<br/>
-
-If you do any of the above, you will have to start from the beginning position again and you will lose one life.
+You must avoid the following, otherwise you will have to start from the beginning position and will lose one life:
+<ul>
+  <li>Contact with a bug</li>
+  <li>Crossing into the water</li>
+</ul>
 
 The game ends when you lose all over your lives.
 
