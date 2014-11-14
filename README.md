@@ -19,7 +19,7 @@ You must avoid the following, otherwise you will have to start from the beginnin
   <li>Crossing into the water</li>
 </ul>
 
-The game ends when you lose all over your lives.
+The game ends when you lose all of your lives.
 
 Start the game by opening the following link in your web browser:
 http://cch5ng.github.io/frontend-nanodegree-arcade-game/
