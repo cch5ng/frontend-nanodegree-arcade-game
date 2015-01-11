@@ -1,3 +1,25 @@
 body {
     text-align: center;
 }
+
+.footer {
+	color: gray;
+}
+
+a:link {
+	color: gray;
+	text-decoration: none;
+}
+
+a:hover {
+	color: purple;
+}
+
+a:active {
+	color: purple;
+}
+
+a:visited {
+	color: gray;
+	text-decoration: none;
+}

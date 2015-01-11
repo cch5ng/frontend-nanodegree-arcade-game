@@ -8,10 +8,13 @@
     <script src="js/resources.js"></script>
     <script src="js/app.js"></script>
     <script src="js/engine.js"></script>
-    <audio id="bgdAudio" loop onloadeddata="setLowVolume()" autoplay>
+		<audio id="bgdAudio" loop onloadeddata="setLowVolume()" autoplay>
 		  <source src="media/Citrus_KeizoAkutagawa.mp3" type="audio/mpeg" volume="0.5"/>
 		  <source src="media/Citrus_KeizoAkutagawa.ogg" type="audio/ogg"volume="0.5"/>
 		</audio>
+		<div class="footer">
+			The song, <a href="https://soundcloud.com/keizo-akutagawa/citrus" target="_blank">Citrus</a> is by <a href="https://soundcloud.com/keizo-akutagawa" target="_blank">Keizo Akutagawa.</a>
+		</div>
 		<script>
 			var setLowVolume = function() {
 				var backgroundAudio = document.getElementById("bgdAudio")
