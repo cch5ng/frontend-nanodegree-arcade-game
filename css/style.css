@@ -3,23 +3,23 @@ body {
 }
 
 .footer {
-	color: gray;
+	color: #696969;
 }
 
 a:link {
-	color: gray;
+	color: #696969;
 	text-decoration: none;
 }
 
 a:hover {
-	color: purple;
+	color: #483d8b;
 }
 
 a:active {
-	color: purple;
+	color: #483d8b;
 }
 
 a:visited {
-	color: gray;
+	color: #696969;
 	text-decoration: none;
 }
