@@ -4,8 +4,12 @@ var Engine = (function(global) {
         canvas = doc.createElement('canvas'),
         ctx = canvas.getContext('2d'),
         patterns = {},
-        lastTime;
+        gameStarted = false,
+        curPlayer = 0,
+        lastTime,
+        curCanvas;
 
+    canvas.id = 'my_canvas';
     canvas.width = 505;
     canvas.height = 606;
     doc.body.appendChild(canvas);
@@ -15,17 +19,24 @@ var Engine = (function(global) {
         var now = Date.now(),
             dt = (now - lastTime) / 1000.0;
 
-        update(dt);
-        render();
-
-        lastTime = now;
+        if (!gameStarted) {
+            curCanvas = document.querySelector('#my_canvas');
+            curCanvas.addEventListener('click', getPlayerChoice, false);
+            updatePlayer();
+            choosePlayer();
+            console.log('do something');
+        } else {
+            update(dt);
+            render();
+            lastTime = now;
+        }
         win.requestAnimationFrame(main);
-
     }
 
     function init() {
-
-        reset();
+        //TODO add check for game state and display of screen to select the player
+        //and start the game play
+        reset(); //this is not actually being used
         lastTime = Date.now();
         main();
     }
@@ -44,6 +55,61 @@ var Engine = (function(global) {
         audioIcon.update();
         scoreText.update(score);
         livesText.update(lives);
+    }
+
+    function choosePlayer() {
+        var players = [
+                'images/char-boy.png',
+                'images/char-cat-girl.png',
+                'images/char-horn-girl.png',
+                'images/char-princess-girl.png'
+            ],
+            numPlayers = 4
+            player;
+        for (player = 0; player < numPlayers; player++) {
+            ctx.drawImage(Resources.get(players[player]), 50 + player * 101, 0);
+        }
+    }
+
+    function getPlayerChoice(e) {
+        console.log('getPlayerChoice called');
+        var canvasPosition = {
+            x: curCanvas.offsetLeft,
+            y: curCanvas.offsetTop
+        };
+
+        var mouse = {
+            x: e.pageX - canvasPosition.x,
+            y: e.pageY - canvasPosition.y
+        };
+
+        console.log('mouse.x:' + mouse.x);
+        console.log('mouse.y:' + mouse.y);
+
+        if (mouse.y >= 45 && mouse.y <= 113) {
+            if (mouse.x >= 50 && mouse.x < 151) {
+                curPlayer = 0;
+            } else if (mouse.x >= 151 && mouse.x < 252) {
+                curPlayer = 1;
+            } else if (mouse.x >= 252 && mouse.x < 353) {
+                curPlayer = 2;
+            } else if (mouse.x >= 353 && mouse.x < 454) {
+                curPlayer = 3;
+            } 
+        }
+        updatePlayer();
+    }
+
+    /**
+     * Draws rectangle around the currently selected player. The boy is the default selection.
+     */
+    function updatePlayer() {
+        //for case that player is not current player, probably want to draw white rectangles around those players first?
+
+        ctx.rect(50 + curPlayer * 101, 45, 101, 113);
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = 'red';
+        ctx.stroke();
     }
 
     function render() {
@@ -89,6 +155,8 @@ var Engine = (function(global) {
         'images/enemy-bug.png',
         'images/char-boy.png',
         'images/char-cat-girl.png',
+        'images/char-horn-girl.png',
+        'images/char-princess-girl.png',
         'images/enemy-bug-grn.png',
         'images/enemy-bug-org.png',
         'images/enemy-bug-prp.png',
