@@ -23,7 +23,7 @@ var Engine = (function(global) {
             curCanvas = document.querySelector('#my_canvas');
             curCanvas.addEventListener('click', getPlayerChoice, false);
             updatePlayer();
-            choosePlayer();
+            showPlayer();
             console.log('do something');
         } else {
             update(dt);
@@ -57,7 +57,7 @@ var Engine = (function(global) {
         livesText.update(lives);
     }
 
-    function choosePlayer() {
+    function showPlayer() {
         var players = [
                 'images/char-boy.png',
                 'images/char-cat-girl.png',
@@ -95,9 +95,11 @@ var Engine = (function(global) {
                 curPlayer = 2;
             } else if (mouse.x >= 353 && mouse.x < 454) {
                 curPlayer = 3;
-            } 
+            }
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
-        updatePlayer();
+        //updatePlayer();
+
     }
 
     /**
