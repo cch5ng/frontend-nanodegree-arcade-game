@@ -12,6 +12,7 @@ var PRIZE_X = [0, 101, 202, 303, 404];
 var PRIZE_Y = [72, 155, 238];
 var score = 0;
 var lives = 3;
+var state = 'not_started'; //alternate value 'started'
 
 //helper functions
 /**
@@ -296,16 +297,57 @@ var audioIcon = new AudioIcon(CANVAS_DIMENSIONS[0] - 180, 0, 38, 38);
 
 /**This listens for key presses and sends the keys to your
  *     Player.handleInput() method. You don't need to modify this.
+ *     Updated from initial logic using event.keyCode b/c MDN mentioned deprecated (OK for firefox).
+ *     But having a challenge finding which keyboard event value format Chrome is currently using.
+ *     Might have to accept both e.key and e.keyCode?
  */
 document.addEventListener('keyup', function(e) {
-    var allowedKeys = {
+    var allowedKeys = ['Left', 'Right', 'Down', 'Up', 'k', 'i', 'j', 'l'];
+    var allowedKeyCodes = {
         37: 'left',
         38: 'up',
         39: 'right',
-        40: 'down'
+        40: 'down',
+        73: 'up',
+        74: 'left',
+        75: 'down',
+        76: 'right'
     };
 
-    player.handleInput(allowedKeys[e.keyCode]);
+    // console.log(e.key);
+
+    if (e.keyCode != undefined) {
+        player.handleInput(allowedKeyCodes[e.keyCode]);
+    } else if (e.key != undefined) {
+        if (allowedKeys.indexOf(e.key) != -1) { //e.key works in firefox but breaks chrome
+            switch (e.key) {
+                case 'Left': // | 'j':
+                    player.handleInput('left'); //e.keyCode
+                    break;
+                case 'j':
+                    player.handleInput('left'); //e.keyCode
+                    break;
+                case 'Right': // | 'l':
+                    player.handleInput('right'); //e.keyCode
+                    break;
+                case 'l':
+                    player.handleInput('right'); //e.keyCode
+                    break;
+                case 'Down': //| 'k':
+                    player.handleInput('down'); //e.keyCode
+                    break;
+                case 'k':
+                    player.handleInput('down'); //e.keyCode
+                    break;
+                case 'Up': // | 'i':
+                    player.handleInput('up'); //e.keyCode
+                    break;
+                case 'i':
+                    player.handleInput('up'); //e.keyCode
+                    break;
+            }
+        }
+    }
 });
 
 /** Listens for mouse clicks on the audio icon. */
