@@ -4,7 +4,7 @@ var Engine = (function(global) {
         canvas = doc.createElement('canvas'),
         ctx = canvas.getContext('2d'),
         patterns = {},
-        gameStarted = false,
+        gameStarted = false, //tracks the game state
         curPlayer = 0,
         lastTime,
         curCanvas;
@@ -16,20 +16,19 @@ var Engine = (function(global) {
     ctx.font = "30pt Arial"; //lives, score
 
     function main() {
-        var now = Date.now(),
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (gameStarted) {
+            var now = Date.now(),
             dt = (now - lastTime) / 1000.0;
-
-        if (!gameStarted) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            update(dt);
+            render();
+            lastTime = now;
+        } else {
             curCanvas = document.querySelector('#my_canvas');
             curCanvas.addEventListener('click', getPlayerChoice, false);
             //updatePlayer();
             showPlayer();
             console.log('do something');
-        } else {
-            update(dt);
-            render();
-            lastTime = now;
         }
         win.requestAnimationFrame(main);
     }
@@ -71,13 +70,13 @@ var Engine = (function(global) {
                 'images/char-horn-girl-rect.png',
                 'images/char-princess-girl-rect.png'
             ],
-            numPlayers = 4
-            player;
-        for (player = 0; player < numPlayers; player++) {
-            if (player == curPlayer) {
-                ctx.drawImage(Resources.get(playersRect[player]), 50 + player * 101, 0);
+            numPlayers = 4,
+            my_player;
+        for (my_player = 0; my_player < numPlayers; my_player++) {
+            if (my_player == curPlayer) {
+                ctx.drawImage(Resources.get(playersRect[my_player]), 50 + my_player * 101, 0);
             } else {
-                ctx.drawImage(Resources.get(players[player]), 50 + player * 101, 0);
+                ctx.drawImage(Resources.get(players[my_player]), 50 + my_player * 101, 0);
             }
         }
         //draw button to start game
@@ -100,7 +99,7 @@ var Engine = (function(global) {
         console.log('mouse.x:' + mouse.x);
         console.log('mouse.y:' + mouse.y);
 
-        if (mouse.y >= 45 && mouse.y <= 113) {
+        if (mouse.y >= 45 && mouse.y <= 113) { //if user selected an avatar, updates the avatar image with a rectangle
             if (mouse.x >= 50 && mouse.x < 151) {
                 curPlayer = 0;
             } else if (mouse.x >= 151 && mouse.x < 252) {
@@ -110,8 +109,11 @@ var Engine = (function(global) {
             } else if (mouse.x >= 353 && mouse.x < 454) {
                 curPlayer = 3;
             }
+            //showPlayer();
+        } else if (mouse.x >= (canvas.width / 2 - 45) && mouse.x <= (canvas.width / 2 + 45) && mouse.y >= 175 && mouse.y <= 215) { //if user presses the Start button, updates the game state
+            gameStarted = true;
+            //main();
         }
-        showPlayer();
         //updatePlayer();
 
     }

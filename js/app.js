@@ -283,6 +283,7 @@ var scoreText = new Text('Score', score);
 scoreText.render = function() {
     var metrics = ctx.measureText(this.displayStr);
     ctx.clearRect(0, 0, metrics.width, 43);
+    ctx.fillStyle = 'black';
     ctx.fillText(this.displayStr, 0, 40);
 };
 
@@ -290,6 +291,7 @@ scoreText.render = function() {
 livesText.render = function() {
     var metrics = ctx.measureText(this.displayStr);
     ctx.clearRect(CANVAS_DIMENSIONS[0] - metrics.width, 0, metrics.width, 43);
+    ctx.filleStyle = 'black';
     ctx.fillText(this.displayStr, CANVAS_DIMENSIONS[0] - metrics.width, 40);
 };
 
