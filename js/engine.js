@@ -20,9 +20,10 @@ var Engine = (function(global) {
             dt = (now - lastTime) / 1000.0;
 
         if (!gameStarted) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             curCanvas = document.querySelector('#my_canvas');
             curCanvas.addEventListener('click', getPlayerChoice, false);
-            updatePlayer();
+            //updatePlayer();
             showPlayer();
             console.log('do something');
         } else {
@@ -64,11 +65,24 @@ var Engine = (function(global) {
                 'images/char-horn-girl.png',
                 'images/char-princess-girl.png'
             ],
+            playersRect = [
+                'images/char-boy-rect.png',
+                'images/char-cat-girl-rect.png',
+                'images/char-horn-girl-rect.png',
+                'images/char-princess-girl-rect.png'
+            ],
             numPlayers = 4
             player;
         for (player = 0; player < numPlayers; player++) {
-            ctx.drawImage(Resources.get(players[player]), 50 + player * 101, 0);
+            if (player == curPlayer) {
+                ctx.drawImage(Resources.get(playersRect[player]), 50 + player * 101, 0);
+            } else {
+                ctx.drawImage(Resources.get(players[player]), 50 + player * 101, 0);
+            }
         }
+        //draw button to start game
+        ctx.fillStyle = '#00f';
+        ctx.fillRect(canvas.width / 2 - 45, 175, 90, 40);
     }
 
     function getPlayerChoice(e) {
@@ -96,8 +110,8 @@ var Engine = (function(global) {
             } else if (mouse.x >= 353 && mouse.x < 454) {
                 curPlayer = 3;
             }
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
+        showPlayer();
         //updatePlayer();
 
     }
@@ -106,6 +120,7 @@ var Engine = (function(global) {
      * Draws rectangle around the currently selected player. The boy is the default selection.
      */
     function updatePlayer() {
+        //maybe this should not be drawn from the engine
         //for case that player is not current player, probably want to draw white rectangles around those players first?
 
         ctx.rect(50 + curPlayer * 101, 45, 101, 113);
@@ -156,9 +171,13 @@ var Engine = (function(global) {
         'images/grass-block.png',
         'images/enemy-bug.png',
         'images/char-boy.png',
+        'images/char-boy-rect.png',
         'images/char-cat-girl.png',
+        'images/char-cat-girl-rect.png',
         'images/char-horn-girl.png',
+        'images/char-horn-girl-rect.png',
         'images/char-princess-girl.png',
+        'images/char-princess-girl-rect.png',
         'images/enemy-bug-grn.png',
         'images/enemy-bug-org.png',
         'images/enemy-bug-prp.png',
