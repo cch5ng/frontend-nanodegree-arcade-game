@@ -71,7 +71,11 @@ var Engine = (function(global) {
                 'images/char-princess-girl-rect.png'
             ],
             numPlayers = 4,
+            btnString = 'Start',
+            metrics = ctx.measureText(btnString),
+            btnStringWidth,
             my_player;
+        //console.log('btnStringHeight: ' + btnStringHeight);
         for (my_player = 0; my_player < numPlayers; my_player++) {
             if (my_player == curPlayer) {
                 ctx.drawImage(Resources.get(playersRect[my_player]), 50 + my_player * 101, 0);
@@ -80,8 +84,13 @@ var Engine = (function(global) {
             }
         }
         //draw button to start game
+        btnStringWidth = metrics.width,
         ctx.fillStyle = '#00f';
         ctx.fillRect(canvas.width / 2 - 45, 175, 90, 40);
+        //draw button text
+        ctx.font = '16pt Arial';
+        ctx.fillStyle = 'black';
+        ctx.fillText(btnString, canvas.width / 2 - btnStringWidth / 2, 175 + 40 / 4 + 16);
     }
 
     function getPlayerChoice(e) {
