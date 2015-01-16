@@ -28,6 +28,22 @@ var Engine = (function(global) {
                 my_avatar.update();
                 my_avatar.render();
             });
+            //draw start btn
+            var btnString = 'Start',
+                metrics = ctx.measureText(btnString),
+                btnStringWidth;
+
+            ctx.fillStyle = '#fff';
+            ctx.lineWidth = '1';
+            ctx.strokeStyle = '#57515d';
+            ctx.rect(canvas.width / 2 - 45, 175, 90, 40);
+            ctx.stroke();
+            //draw button text
+            btnStringWidth = metrics.width;
+            ctx.font = '16pt Arial';
+            ctx.fillStyle = 'black';
+            ctx.fillText(btnString, canvas.width / 2 - btnStringWidth / 2, 175 + 40 / 4 + 16);
+
         }
         //     curCanvas = document.querySelector('#my_canvas');
         //     curCanvas.addEventListener('click', getPlayerChoice, false);
@@ -148,26 +164,26 @@ var Engine = (function(global) {
     //     ctx.stroke();
     // }
 
-    // function render() {
-    //     var rowImages = [
-    //             'images/water-block.png',
-    //             'images/stone-block.png',
-    //             'images/stone-block.png',
-    //             'images/stone-block.png',
-    //             'images/grass-block.png',
-    //             'images/grass-block.png'
-    //         ],
-    //         numRows = 6,
-    //         numCols = 5,
-    //         row, col,
-    //         micPath = 'images/mic50x50.jpg';
-    //     for (row = 0; row < numRows; row++) {
-    //         for (col = 0; col < numCols; col++) {
-    //             ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
-    //         }
-    //     }
-    //     renderEntities();
-    // }
+    function render() {
+        var rowImages = [
+                'images/water-block.png',
+                'images/stone-block.png',
+                'images/stone-block.png',
+                'images/stone-block.png',
+                'images/grass-block.png',
+                'images/grass-block.png'
+            ],
+            numRows = 6,
+            numCols = 5,
+            row, col,
+            micPath = 'images/mic50x50.jpg';
+        for (row = 0; row < numRows; row++) {
+            for (col = 0; col < numCols; col++) {
+                ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
+            }
+        }
+        renderEntities();
+    }
 
     function renderEntities() {
         allEnemies.forEach(function(enemy) {
