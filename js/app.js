@@ -138,7 +138,7 @@ Enemy.prototype.reset = function() {
 var Player = function(x, y) {
     //not sure if I should write a unique constructor to take in the avatar index as param
     DynamicElement.call(this, x, y);
-    this.sprite = PLAYER_IMAGES[avatar]; //path for the player image
+    this.sprite = PLAYER_IMAGES[avatarIdx]; //path for the player image
 };
 
 Player.prototype = Object.create(DynamicElement.prototype);
@@ -339,8 +339,9 @@ for (var k = 1; k < 4; k++) {
     allAvatars.push(avatar1);
 }
 
-console.log('length allAvatars: ' + allAvatars.length);
-console.log('sprite avatar0: ' + allAvatars[0].sprite);
+
+// console.log('length allAvatars: ' + allAvatars.length);
+// console.log('sprite avatar0: ' + allAvatars[0].sprite);
 
 var player = new Player(PLAYER_START_LOC[0], PLAYER_START_LOC[1]);
 var allEnemies = [];
@@ -359,6 +360,7 @@ scoreText.render = function() {
     var metrics = ctx.measureText(this.displayStr);
     ctx.clearRect(0, 0, metrics.width, 43);
     ctx.fillStyle = 'black';
+    ctx.font = '24pt Arial'; //not sure why this is not getting applied
     ctx.fillText(this.displayStr, 0, 40);
 };
 
@@ -366,7 +368,8 @@ scoreText.render = function() {
 livesText.render = function() {
     var metrics = ctx.measureText(this.displayStr);
     ctx.clearRect(CANVAS_DIMENSIONS[0] - metrics.width, 0, metrics.width, 43);
-    ctx.filleStyle = 'black';
+    ctx.fillStyle = 'black';
+    ctx.font = '24pt Arial';
     ctx.fillText(this.displayStr, CANVAS_DIMENSIONS[0] - metrics.width, 40);
 };
 
@@ -447,6 +450,7 @@ document.addEventListener('click', function(e) {
             } else if (mPos.x >= 353 && mPos.x < 454) {
                 avatarIdx = 3;
             }
+            player.sprite = PLAYER_IMAGES[avatarIdx];
         } else if (mPos.x >= (CANVAS_DIMENSIONS[0] / 2 - 45) && mPos.x <= (CANVAS_DIMENSIONS[0] / 2 + 45) && mPos.y >= 175 && mPos.y <= 215) { //if user presses the Start button, updates the game state
             gameStarted = true;
         }
