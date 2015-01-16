@@ -2,7 +2,18 @@
 var CANVAS_DIMENSIONS = [505, 606];
 var ENEMY_HEIGHTS = [63, 146, 229];
 var ENEMY_IMAGE = ['images/enemy-bug-grn.png', 'images/enemy-bug-org.png', 'images/enemy-bug-prp.png'];
-var PLAYER_IMAGE = 'images/char-cat-girl.png';
+var PLAYER_IMAGES = [
+        'images/char-boy.png',
+        'images/char-cat-girl.png',
+        'images/char-horn-girl.png',
+        'images/char-princess-girl.png'
+    ];
+var AVATAR_RECT_IMAGES = [
+        'images/char-boy-rect.png',
+        'images/char-cat-girl-rect.png',
+        'images/char-horn-girl-rect.png',
+        'images/char-princess-girl-rect.png'
+    ];
 var PRIZE_IMAGE = ['images/Heart.png', 'images/Key.png', 'images/Star.png'];
 var MIC_IMAGE = ['images/mic50x50.jpg', 'images/mic_grey.jpg']; //first image for audio player on, second image for off
 var ENEMY_VELOCITY = [25, 90];
@@ -12,7 +23,8 @@ var PRIZE_X = [0, 101, 202, 303, 404];
 var PRIZE_Y = [72, 155, 238];
 var score = 0;
 var lives = 3;
-var state = 'not_started'; //alternate value 'started'
+var gameStarted = false;
+var avatarIdx = 0;
 
 //helper functions
 /**
@@ -120,10 +132,13 @@ Enemy.prototype.reset = function() {
  * @constructor
  * @param {integer} x - initial X position for the element
  * @param {integer} x - initial Y position for the element
+ * @param {integer} avatarIdx - indicates the player's selected avatar and will be used to display the
+ *      appropriate image.
  */
 var Player = function(x, y) {
+    //not sure if I should write a unique constructor to take in the avatar index as param
     DynamicElement.call(this, x, y);
-    this.sprite = PLAYER_IMAGE; //path for the player image
+    this.sprite = PLAYER_IMAGES[avatar]; //path for the player image
 };
 
 Player.prototype = Object.create(DynamicElement.prototype);
@@ -191,6 +206,47 @@ Player.prototype.checkCollisions = function() {
 Player.prototype.reset = function() {
     this.x = PLAYER_START_LOC[0];
     this.y = PLAYER_START_LOC[1];
+};
+
+// This class requires an update(), render() and
+// a handleInput() method.
+/**
+ * Represents the player's avatar
+ * @constructor
+ * @param {integer} x - initial X position for the element
+ * @param {integer} y - initial Y position for the element
+ * @param {integer} avatarIdx - indicates the index of the avatar and will be used to display the
+ *      appropriate image.
+ * @param {boolean} isSelected - indicates whether the avatar is currently selected by the user.
+ *      on initial creation, the first avatar will be selected.
+ */
+
+var Avatar = function(x, y, avatarIndex) { //, isSelected
+//    DynamicElement.call(this, x, y);
+    this.x = x;
+    this.y = y;
+    this.idx = avatarIndex;
+    if (this.idx == avatarIdx) {
+        this.sprite = AVATAR_RECT_IMAGES[this.idx]; //path for the player image with rectangle
+    } else if (this.idx != avatarIdx) {
+        this.sprite = PLAYER_IMAGES[this.idx]; //path for the player image without rectangle
+    }
+};
+
+/** Renders a dynamic element */
+Avatar.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+
+/**
+ * Update the avatar's sprite if user selection has changed
+ */
+Avatar.prototype.update = function() {
+    if ((this.idx) == avatarIdx) {
+        this.sprite = AVATAR_RECT_IMAGES[this.idx]; //path for the player image with rectangle
+    } else {
+        this.sprite = PLAYER_IMAGES[this.idx];
+    }
 };
 
 /**
@@ -267,6 +323,25 @@ Text.prototype.update = function(curCount) { //not completely sure why this was 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
+// var allAvatars = [];
+
+// for (var k = 0; k < 4; k++) {
+//     var avatar = new Player(50 + k * 101, 0);
+//     allAvatars.push(avatar);
+// }
+
+var allAvatars = [];
+var avatar = new Avatar(50, 0, 0);
+allAvatars.push(avatar);
+
+for (var k = 1; k < 4; k++) {
+    var avatar1 = new Avatar(50 + 101 * k, 0, k);
+    allAvatars.push(avatar1);
+}
+
+console.log('length allAvatars: ' + allAvatars.length);
+console.log('sprite avatar0: ' + allAvatars[0].sprite);
+
 var player = new Player(PLAYER_START_LOC[0], PLAYER_START_LOC[1]);
 var allEnemies = [];
 
@@ -353,11 +428,28 @@ document.addEventListener('keyup', function(e) {
 });
 
 /** Listens for mouse clicks on the audio icon. */
+//TODO update to listen for avatar selection, dependent on game state
 document.addEventListener('click', function(e) {
     var myCanvas = document.querySelector('canvas');
     var mPos = getMousePos(myCanvas, e);
-    if (mPos.x >= myCanvas.width - 170 && mPos.x <= myCanvas.width - 132 && mPos.y >= 10 && mPos.y <= 48) {
-        audioIcon.togglePlay();
+    if (gameStarted) {
+        if (mPos.x >= myCanvas.width - 170 && mPos.x <= myCanvas.width - 132 && mPos.y >= 10 && mPos.y <= 48) {
+            audioIcon.togglePlay();
+        }
+    } else {
+        if (mPos.y >= 45 && mPos.y <= 113) { //if user selected an avatar, updates the avatar image with a rectangle
+            if (mPos.x >= 50 && mPos.x < 151) {
+                avatarIdx = 0;
+            } else if (mPos.x >= 151 && mPos.x < 252) {
+                avatarIdx = 1;
+            } else if (mPos.x >= 252 && mPos.x < 353) {
+                avatarIdx = 2;
+            } else if (mPos.x >= 353 && mPos.x < 454) {
+                avatarIdx = 3;
+            }
+        } else if (mPos.x >= (CANVAS_DIMENSIONS[0] / 2 - 45) && mPos.x <= (CANVAS_DIMENSIONS[0] / 2 + 45) && mPos.y >= 175 && mPos.y <= 215) { //if user presses the Start button, updates the game state
+            gameStarted = true;
+        }
     }
 });
 
