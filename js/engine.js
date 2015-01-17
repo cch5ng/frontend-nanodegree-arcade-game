@@ -19,7 +19,7 @@ var Engine = (function(global) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         if (gameStarted) {
             var now = Date.now(),
-            dt = (now - lastTime) / 1000.0;
+            dt = (now - lastTime) / 1000.0; //dt is about 0.016 b/c of the requestAnimationFrame() at end of main()
             update(dt);
             render();
             lastTime = now;
@@ -76,6 +76,7 @@ var Engine = (function(global) {
         audioIcon.update();
         scoreText.update(score);
         livesText.update(lives);
+        timer.update(Date.now());
     }
 
     /**
@@ -194,6 +195,7 @@ var Engine = (function(global) {
         audioIcon.render();
         scoreText.render();
         livesText.render();
+        timer.render();
     }
 
     function reset() {

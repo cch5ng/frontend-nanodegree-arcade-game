@@ -1,20 +1,28 @@
 //global vars
-var CANVAS_DIMENSIONS = [505, 606];
-var ENEMY_HEIGHTS = [63, 146, 229];
-var ENEMY_IMAGE = ['images/enemy-bug-grn.png', 'images/enemy-bug-org.png', 'images/enemy-bug-prp.png'];
-var PLAYER_IMAGES = [
+var CANVAS_DIMENSIONS = [505, 606],
+    ENEMY_HEIGHTS = [63, 146, 229],
+    ENEMY_IMAGE = [
+        'images/enemy-bug-grn.png',
+        'images/enemy-bug-org.png',
+        'images/enemy-bug-prp.png'
+    ],
+    PLAYER_IMAGES = [
         'images/char-boy.png',
         'images/char-cat-girl.png',
         'images/char-horn-girl.png',
         'images/char-princess-girl.png'
-    ];
-var AVATAR_RECT_IMAGES = [
+    ],
+    AVATAR_RECT_IMAGES = [
         'images/char-boy-rect.png',
         'images/char-cat-girl-rect.png',
         'images/char-horn-girl-rect.png',
         'images/char-princess-girl-rect.png'
+    ],
+    PRIZE_IMAGE = [
+        'images/Heart.png',
+        'images/Key.png',
+        'images/Star.png'
     ];
-var PRIZE_IMAGE = ['images/Heart.png', 'images/Key.png', 'images/Star.png'];
 var MIC_IMAGE = ['images/mic50x50.jpg', 'images/mic_grey.jpg']; //first image for audio player on, second image for off
 var ENEMY_VELOCITY = [25, 90];
 var PLAYER_START_LOC = [202, 405];
@@ -25,6 +33,8 @@ var score = 0;
 var lives = 3;
 var gameStarted = false;
 var avatarIdx = 0;
+var gameLength = 15; //default 180
+var startTime;
 
 //helper functions
 /**
@@ -320,6 +330,33 @@ Text.prototype.update = function(curCount) { //not completely sure why this was 
     this.displayStr = this.str + ' ' + curCount.toString();
 };
 
+//needs render and update functions
+var Timer = function(length) {
+    this.length = length;
+    this.min = Math.floor(length / 60);
+    this.secTen = Math.floor(length % 60 / 10);
+    this.secOne = (length % 60) % 10;
+    this.displayStr = this.min.toString() + ':' + this.secTen.toString() + this.secOne.toString();
+    this.startTime = 0;
+};
+
+Timer.prototype.render = function() {
+    var metrics = ctx.measureText(this.displayStr);
+    var timerX = CANVAS_DIMENSIONS[0] / 2 - metrics.width / 2;
+    ctx.clearRect(timerX, 0, metrics.width, 43);
+    ctx.fillStyle = '#580189';
+    ctx.font = '24pt Arial'; //not sure why this is not getting applied
+    ctx.fillText(this.displayStr, CANVAS_DIMENSIONS[0] / 2 - metrics.width / 2, 40);
+};
+
+Timer.prototype.update = function(curTime) {
+    var timeDifference = Math.floor((curTime - this.startTime) / 1000);
+    this.min = Math.floor((this.length - timeDifference) / (60));
+    this.secTen = Math.floor((this.length - timeDifference) % (60) / 10);
+    this.secOne = ((this.length - timeDifference) % (60)) % 10;
+    this.displayStr = this.min.toString() + ':' + this.secTen.toString() + this.secOne.toString();
+};
+
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
@@ -354,6 +391,8 @@ for (var j = 0; j < 5; j++) {
 var prize = new Prize(303, 155);
 var livesText = new Text('Lives', lives);
 var scoreText = new Text('Score', score);
+var timer = new Timer(gameLength);
+console.log(timer.displayStr);
 
 /** Renders the Score at the left edge.*/
 scoreText.render = function() {
@@ -453,6 +492,8 @@ document.addEventListener('click', function(e) {
             player.sprite = PLAYER_IMAGES[avatarIdx];
         } else if (mPos.x >= (CANVAS_DIMENSIONS[0] / 2 - 45) && mPos.x <= (CANVAS_DIMENSIONS[0] / 2 + 45) && mPos.y >= 175 && mPos.y <= 215) { //if user presses the Start button, updates the game state
             gameStarted = true;
+            timer.startTime = Date.now();
+            console.log('timer startTime: ' + timer.startTime);
         }
     }
 });
