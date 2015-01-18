@@ -17,13 +17,13 @@ var Engine = (function(global) {
 
     function main() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        if (gameStarted) {
+        if (curGameState == gameStates[1]) { //game started and in play
             var now = Date.now(),
             dt = (now - lastTime) / 1000.0; //dt is about 0.016 b/c of the requestAnimationFrame() at end of main()
             update(dt);
             render();
             lastTime = now;
-        } else {
+        } else if (curGameState == gameStates[0]) { //game not started
             allAvatars.forEach(function(my_avatar) {
                 my_avatar.update();
                 my_avatar.render();
@@ -44,6 +44,33 @@ var Engine = (function(global) {
             ctx.fillStyle = 'black';
             ctx.fillText(btnString, canvas.width / 2 - btnStringWidth / 2, 175 + 40 / 4 + 16);
 
+        } else if (curGameState == gameStates[2]) { //game over
+            var gameOverString = 'GAME OVER',
+                btnString1 = 'Replay',
+                metrics1 = ctx.measureText(btnString1),
+                metrics2 = ctx.measureText(gameOverString),
+                btnString1Width,
+                gameOverWidth;
+            //clear rect from the start button
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            //ctx.clearRect(canvas.width / 2 - 42, 172, 90 + 6, 46);
+            //draw game over text
+            ctx.fillStyle = '#bf0e0e';
+            ctx.font = '36pt Aclonica';
+            gameOverWidth = metrics2.width;
+            //had to make adjustment to x position b/c measureText() set width for 'GAME' instead of 'GAME OVER'
+            ctx.fillText(gameOverString, (canvas.width / 2 - gameOverWidth - 15), 240);
+            //draw replay btn
+            ctx.fillStyle = '#fff';
+            ctx.lineWidth = '1';
+            ctx.strokeStyle = '#57515d';
+            ctx.rect(canvas.width / 2 - 45, 280, 90, 40);
+            ctx.stroke();
+            //draw button text
+            btnString1Width = metrics1.width;
+            ctx.font = '16pt Arial';
+            ctx.fillStyle = 'black';
+            ctx.fillText(btnString1, canvas.width / 2 - btnString1Width / 2, 280 + 40 / 4 + 16);
         }
         //     curCanvas = document.querySelector('#my_canvas');
         //     curCanvas.addEventListener('click', getPlayerChoice, false);

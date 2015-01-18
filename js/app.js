@@ -31,6 +31,8 @@ var PRIZE_X = [0, 101, 202, 303, 404];
 var PRIZE_Y = [72, 155, 238];
 var score = 0;
 var lives = 3;
+var gameStates = ['notStarted', 'started', 'over'];
+var curGameState = gameStates[0];
 var gameStarted = false;
 var avatarIdx = 0;
 var gameLength = 15; //default 180
@@ -354,7 +356,11 @@ Timer.prototype.update = function(curTime) {
     this.min = Math.floor((this.length - timeDifference) / (60));
     this.secTen = Math.floor((this.length - timeDifference) % (60) / 10);
     this.secOne = ((this.length - timeDifference) % (60)) % 10;
-    this.displayStr = this.min.toString() + ':' + this.secTen.toString() + this.secOne.toString();
+    if (this.min >= 0 && this.secTen >=0 && this.secOne >= 0) {
+        this.displayStr = this.min.toString() + ':' + this.secTen.toString() + this.secOne.toString();
+    } else {
+        curGameState = gameStates[2];
+    }
 };
 
 // Now instantiate your objects.
@@ -474,11 +480,11 @@ document.addEventListener('keyup', function(e) {
 document.addEventListener('click', function(e) {
     var myCanvas = document.querySelector('canvas');
     var mPos = getMousePos(myCanvas, e);
-    if (gameStarted) {
+    if (curGameState == gameStates[1]) {
         if (mPos.x >= myCanvas.width - 170 && mPos.x <= myCanvas.width - 132 && mPos.y >= 10 && mPos.y <= 48) {
             audioIcon.togglePlay();
         }
-    } else {
+    } else if (curGameState == gameStates[0]) {
         if (mPos.y >= 45 && mPos.y <= 113) { //if user selected an avatar, updates the avatar image with a rectangle
             if (mPos.x >= 50 && mPos.x < 151) {
                 avatarIdx = 0;
@@ -491,7 +497,7 @@ document.addEventListener('click', function(e) {
             }
             player.sprite = PLAYER_IMAGES[avatarIdx];
         } else if (mPos.x >= (CANVAS_DIMENSIONS[0] / 2 - 45) && mPos.x <= (CANVAS_DIMENSIONS[0] / 2 + 45) && mPos.y >= 175 && mPos.y <= 215) { //if user presses the Start button, updates the game state
-            gameStarted = true;
+            curGameState = gameStates[1];
             timer.startTime = Date.now();
             console.log('timer startTime: ' + timer.startTime);
         }
