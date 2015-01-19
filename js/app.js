@@ -346,7 +346,7 @@ Button.prototype.render = function() {
     var metrics = ctx.measureText(this.displayStr);
     this.displayStrWidth = metrics.width;
     console.log('button displayStrWidth: ' + this.displayStrWidth);
-    console.log('this: ' + this);
+    //console.log('this: ' + this);
     ctx.fillStyle = '#a3bdc8';
     //ctx.lineWidth = '1';
     //ctx.strokeStyle = '#57515d';
