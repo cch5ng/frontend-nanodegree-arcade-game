@@ -206,7 +206,12 @@ Player.prototype.checkCollisions = function() {
         if (playerStoneCell[0] == enemyStoneCell[0] && playerStoneCell[1] == enemyStoneCell[1] && enemyStoneCell[0] >= 0 && enemyStoneCell[1] >=0) {
             this.reset();
             lives -= 1;
+            //check if player has died
         }
+        if (lives <= 0) {
+            curGameState = gameStates[2];
+        }
+
     }
     //check for collision with prize
     prizeStoneCell = getStoneCell(prize.x, prize.y);
