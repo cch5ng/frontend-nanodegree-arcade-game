@@ -29,6 +29,7 @@ var PLAYER_START_LOC = [202, 405];
 var PLAYER_MOVE = [101, 83];
 var PRIZE_X = [0, 101, 202, 303, 404];
 var PRIZE_Y = [72, 155, 238];
+var BUTTON_DIMENSIONS = [90, 40]; //width and height
 var score = 0;
 var lives = 3;
 var gameStates = ['notStarted', 'started', 'over'];
@@ -332,6 +333,42 @@ Text.prototype.update = function(curCount) { //not completely sure why this was 
     this.displayStr = this.str + ' ' + curCount.toString();
 };
 
+//needs render function; will be used by Start button and Replay button
+var Button = function(y, displayStr) {
+    this.x = CANVAS_DIMENSIONS[0] / 2 - BUTTON_DIMENSIONS[0] / 2; //this is a constant value, centering the button in the canvas
+    this.y = y;
+    this.displayStr = displayStr;
+    this.displayStrWidth = 0;
+};
+
+Button.prototype.render = function() {
+    //draw btn rect
+    var metrics = ctx.measureText(this.displayStr);
+    this.displayStrWidth = metrics.width;
+    console.log('button displayStrWidth: ' + this.displayStrWidth);
+    console.log('this: ' + this);
+    ctx.fillStyle = '#e9d5ae';
+    //ctx.lineWidth = '1';
+    //ctx.strokeStyle = '#57515d';
+    ctx.fillRect(this.x, this.y, BUTTON_DIMENSIONS[0], BUTTON_DIMENSIONS[1]); //start button y: 175
+    //ctx.stroke();
+    //draw button text
+    ctx.font = '16pt Arial';
+    ctx.fillStyle = 'black';
+    ctx.fillText(this.displayStr, (CANVAS_DIMENSIONS[0] / 2 - (this.displayStrWidth / 2)), this.y + 40 / 4 + 16); //16 - font size //
+};
+
+Button.prototype.update = function() {
+    // if (this.y == 175) { //if start button, clear rect respective to the replay button
+    //     console.log('start button hide replay');
+    //     ctx.clearRect(CANVAS_DIMENSIONS[0] / 2 - BUTTON_DIMENSIONS[0] / 2 - 2, 278, 94, 44);
+    // } else { //if replay button, clear rect respective to the start button
+    //     console.log('replay button hide start');
+    //     //ctx.clearRect(0, 0, CANVAS_DIMENSIONS[0], CANVAS_DIMENSIONS[1]);
+    //     ctx.clearRect(CANVAS_DIMENSIONS[0] / 2 - BUTTON_DIMENSIONS[0] / 2 - 2, 173, 94, 44); //added extra border of 2 to make sure stroke gets erased
+    // }
+};
+
 //needs render and update functions
 var Timer = function(length) {
     this.length = length;
@@ -382,7 +419,8 @@ for (var k = 1; k < 4; k++) {
     allAvatars.push(avatar1);
 }
 
-
+var startBtn = new Button(175, 'Start');
+var replayBtn = new Button(280, 'Replay');
 // console.log('length allAvatars: ' + allAvatars.length);
 // console.log('sprite avatar0: ' + allAvatars[0].sprite);
 
@@ -398,7 +436,9 @@ var prize = new Prize(303, 155);
 var livesText = new Text('Lives', lives);
 var scoreText = new Text('Score', score);
 var timer = new Timer(gameLength);
-console.log(timer.displayStr);
+
+
+//console.log(timer.displayStr);
 
 /** Renders the Score at the left edge.*/
 scoreText.render = function() {
@@ -499,7 +539,14 @@ document.addEventListener('click', function(e) {
         } else if (mPos.x >= (CANVAS_DIMENSIONS[0] / 2 - 45) && mPos.x <= (CANVAS_DIMENSIONS[0] / 2 + 45) && mPos.y >= 175 && mPos.y <= 215) { //if user presses the Start button, updates the game state
             curGameState = gameStates[1];
             timer.startTime = Date.now();
-            console.log('timer startTime: ' + timer.startTime);
+            //console.log('timer startTime: ' + timer.startTime);
+        }
+    } else if (curGameState == gameStates[2]) {
+        if (mPos.x >= (CANVAS_DIMENSIONS[0] / 2 - 45) && mPos.x <= (CANVAS_DIMENSIONS[0] / 2 + 45) && mPos.y >= 280 && mPos.y <= 320) { //if user presses replay button
+            curGameState = gameStates[1];
+            timer.startTime = Date.now();
+            score = 0;
+            lives = 3;
         }
     }
 });

@@ -28,23 +28,10 @@ var Engine = (function(global) {
                 my_avatar.update();
                 my_avatar.render();
             });
-            //draw start btn
-            var btnString = 'Start',
-                metrics = ctx.measureText(btnString),
-                btnStringWidth;
-
-            ctx.fillStyle = '#fff';
-            ctx.lineWidth = '1';
-            ctx.strokeStyle = '#57515d';
-            ctx.rect(canvas.width / 2 - 45, 175, 90, 40);
-            ctx.stroke();
-            //draw button text
-            btnStringWidth = metrics.width;
-            ctx.font = '16pt Arial';
-            ctx.fillStyle = 'black';
-            ctx.fillText(btnString, canvas.width / 2 - btnStringWidth / 2, 175 + 40 / 4 + 16);
-
+            //startBtn.update();
+            startBtn.render();
         } else if (curGameState == gameStates[2]) { //game over
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             var gameOverString = 'GAME OVER',
                 btnString1 = 'Replay',
                 metrics1 = ctx.measureText(btnString1),
@@ -52,32 +39,15 @@ var Engine = (function(global) {
                 btnString1Width,
                 gameOverWidth;
             //clear rect from the start button
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            //ctx.clearRect(canvas.width / 2 - 42, 172, 90 + 6, 46);
-            //draw game over text
+            //startBtn = null;
+            //replayBtn.update();
+            replayBtn.render();
             ctx.fillStyle = '#bf0e0e';
             ctx.font = '36pt Aclonica';
             gameOverWidth = metrics2.width;
             //had to make adjustment to x position b/c measureText() set width for 'GAME' instead of 'GAME OVER'
-            ctx.fillText(gameOverString, (canvas.width / 2 - gameOverWidth - 15), 240);
-            //draw replay btn
-            ctx.fillStyle = '#fff';
-            ctx.lineWidth = '1';
-            ctx.strokeStyle = '#57515d';
-            ctx.rect(canvas.width / 2 - 45, 280, 90, 40);
-            ctx.stroke();
-            //draw button text
-            btnString1Width = metrics1.width;
-            ctx.font = '16pt Arial';
-            ctx.fillStyle = 'black';
-            ctx.fillText(btnString1, canvas.width / 2 - btnString1Width / 2, 280 + 40 / 4 + 16);
+            ctx.fillText(gameOverString, (canvas.width / 2 - gameOverWidth / 2), 240);
         }
-        //     curCanvas = document.querySelector('#my_canvas');
-        //     curCanvas.addEventListener('click', getPlayerChoice, false);
-        //     //updatePlayer();
-        //     showPlayer();
-        //     console.log('do something');
-        // }
         win.requestAnimationFrame(main);
     }
 
