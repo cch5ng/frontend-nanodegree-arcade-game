@@ -347,7 +347,7 @@ Button.prototype.render = function() {
     this.displayStrWidth = metrics.width;
     console.log('button displayStrWidth: ' + this.displayStrWidth);
     console.log('this: ' + this);
-    ctx.fillStyle = '#e9d5ae';
+    ctx.fillStyle = '#a3bdc8';
     //ctx.lineWidth = '1';
     //ctx.strokeStyle = '#57515d';
     ctx.fillRect(this.x, this.y, BUTTON_DIMENSIONS[0], BUTTON_DIMENSIONS[1]); //start button y: 175
