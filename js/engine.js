@@ -3,6 +3,7 @@ var Engine = (function(global) {
         win = global.window,
         canvas = doc.createElement('canvas'),
         ctx = canvas.getContext('2d'),
+        gameOverString = 'GAME OVER',
         patterns = {},
         //gameStarted = false, //tracks the game state
         //curPlayer = 0,
@@ -22,6 +23,7 @@ var Engine = (function(global) {
             dt = (now - lastTime) / 1000.0; //dt is about 0.016 b/c of the requestAnimationFrame() at end of main()
             update(dt);
             render();
+            gameOverString = 'GAME OVER';
             lastTime = now;
         } else if (curGameState == gameStates[0]) { //game not started
             allAvatars.forEach(function(my_avatar) {
@@ -32,10 +34,12 @@ var Engine = (function(global) {
             startBtn.render();
         } else if (curGameState == gameStates[2]) { //game over
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            var gameOverString = 'GAME OVER',
-                btnString1 = 'Replay',
-                metrics1 = ctx.measureText(btnString1),
-                metrics2 = ctx.measureText(gameOverString),
+            if (score >= SCORE_TO_WIN) {
+                gameOverString = 'YOU WON';
+            }
+            //var btnString1 = 'Replay',
+                //metrics1 = ctx.measureText(btnString1),
+            var metrics2 = ctx.measureText(gameOverString),
                 btnString1Width,
                 gameOverWidth;
             //clear rect from the start button

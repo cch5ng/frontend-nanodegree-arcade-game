@@ -24,19 +24,20 @@ var CANVAS_DIMENSIONS = [505, 606],
         'images/Star.png'
     ];
 var MIC_IMAGE = ['images/mic50x50.jpg', 'images/mic_grey.jpg']; //first image for audio player on, second image for off
-var ENEMY_VELOCITY = [25, 90];
+var ENEMY_VELOCITY = [25, 180]; //increase the low range of velocity to make game slightly easier
 var PLAYER_START_LOC = [202, 405];
 var PLAYER_MOVE = [101, 83];
 var PRIZE_X = [0, 101, 202, 303, 404];
 var PRIZE_Y = [72, 155, 238];
 var BUTTON_DIMENSIONS = [90, 40]; //width and height
+var SCORE_TO_WIN = 10; //default 10 points to win game
 var score = 0;
 var lives = 3;
 var gameStates = ['notStarted', 'started', 'over'];
 var curGameState = gameStates[0];
 var gameStarted = false;
 var avatarIdx = 0;
-var gameLength = 15; //default 180
+var gameLength = 120; //default 120
 var startTime;
 
 //helper functions
@@ -212,6 +213,10 @@ Player.prototype.checkCollisions = function() {
     if (playerStoneCell[0] == prizeStoneCell[0] && playerStoneCell[1] == prizeStoneCell[1]) {
         prize.reset();
         score += 1;
+        //check if player has won game
+        if (score >= SCORE_TO_WIN) {
+            curGameState = gameStates[2];
+        }
     }
 };
 
@@ -427,7 +432,7 @@ var replayBtn = new Button(280, 'Replay');
 var player = new Player(PLAYER_START_LOC[0], PLAYER_START_LOC[1]);
 var allEnemies = [];
 
-for (var j = 0; j < 5; j++) {
+for (var j = 0; j < 8; j++) { //increased enemy count to 7 to make more challenging
     var enemy = new Enemy(0, ENEMY_HEIGHTS[getRandomInt(0, 3)]);
     allEnemies.push(enemy);
 }
