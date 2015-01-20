@@ -3,14 +3,20 @@ frontend-nanodegree-arcade-game
 
 <h1>Game Rules</h1>
 
-Your goal is to collect as many prizes from the street as possible. Prizes include: Hearts, Stars, and Keys.
+Your goal is to collect 10 prizes from the street before your time is up (3 minutes). Prizes include: Hearts, Stars, and Keys.
+
+<b>Before You Begin:</b>
+<ul>
+	<li>Select an avatar by clicking on it.</li>
+	<li>Click Start.</li>
+</ul>
 
 <b>Game Controls:</b>
 <ul>
-  <li>Move up by using the up arrow key.</li>
-  <li>Move down by using the down arrow key.</li>
-  <li>Move left by using the left arrow key.</li>
-  <li>Move right by using the right arrow key.</li>
+  <li>Move up by using the up arrow key or "i" key.</li>
+  <li>Move down by using the down arrow or "k" key.</li>
+  <li>Move left by using the left arrow or "j" key.</li>
+  <li>Move right by using the right arrow or "l" key.</li>
 </ul>
 
 You must avoid the following, otherwise you will have to start from the beginning position and will lose one life:
@@ -19,7 +25,7 @@ You must avoid the following, otherwise you will have to start from the beginnin
   <li>Crossing into the water</li>
 </ul>
 
-The game ends when you lose all of your lives.
+The game ends when you lose all of your lives or when your time is up.
 
 Start the game by opening the following link in your web browser:
 http://cch5ng.github.io/frontend-nanodegree-arcade-game/
