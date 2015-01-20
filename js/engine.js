@@ -26,6 +26,7 @@ var Engine = (function(global) {
             gameOverString = 'Game Over';
             lastTime = now;
         } else if (curGameState == gameStates[0]) { //game not started
+            gameStartText.render();
             allAvatars.forEach(function(my_avatar) {
                 my_avatar.update();
                 my_avatar.render();

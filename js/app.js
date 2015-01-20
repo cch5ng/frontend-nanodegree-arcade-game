@@ -365,6 +365,32 @@ Button.prototype.render = function() {
     ctx.fillText(this.displayStr, (CANVAS_DIMENSIONS[0] / 2), this.y + 40 / 4 + 16); //16 - font size //
 };
 
+var GameStartText = function(y) {
+    this.x = 0;
+    this.y = y;
+    this.lines = [
+        'Welcome.',
+        'Our streets are filled with magical objects like',
+        'hearts, keys, and stars. If you can get 10 objects,',
+        'you will be awarded Master Street Dodger.',
+        'Navigate using the arrow keys.',
+        'Beware! There are deadly bugs on the streets.',
+        'If you cross too quickly, you may fall into the water',
+        'and drown. Click on an avatar and then Start.',
+        'Take care and godspeed.'
+    ];
+};
+
+GameStartText.prototype.render = function() {
+    ctx.fillStyle = 'black';
+    ctx.font = '400 16pt Nunito';
+    ctx.textAlign = 'left';
+    var linesLength = this.lines.length;
+    for (var m = 0; m < linesLength; m++) {
+        ctx.fillText(this.lines[m], this.x, this.y + 26 * m);//y = 240
+    }
+};
+
 //needs render and update functions
 var GameOverText = function(y, displayStr) {
     this.y = y;
@@ -372,11 +398,11 @@ var GameOverText = function(y, displayStr) {
 };
 
 GameOverText.prototype.render = function() {
-    var metrics = ctx.measureText(this.displayStr);
+    //var metrics = ctx.measureText(this.displayStr);
     ctx.fillStyle = '#bf0e0e';
     ctx.font = '700 36pt Nunito';
     ctx.textAlign = 'center';
-    var gameOverWidth = metrics.width;
+    //var gameOverWidth = metrics.width;
     ctx.fillText(this.displayStr, CANVAS_DIMENSIONS[0] / 2, this.y);//y = 240
 };
 
@@ -455,6 +481,7 @@ var prize = new Prize(303, 155);
 var livesText = new Text('Lives', lives);
 var scoreText = new Text('Score', score);
 var timer = new Timer(gameLength);
+var gameStartText = new GameStartText(250);
 var gameOverText = new GameOverText(240, GAME_OVER_STR[0]);
 
 
