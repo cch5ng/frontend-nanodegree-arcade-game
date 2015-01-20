@@ -24,6 +24,10 @@ a:visited {
 	text-decoration: none;
 
 @font-face {
-	font-family: 'Aclonica';
-	src: url('http://fonts.googleapis.com/css?family=Aclonica');
+	font-family: 'Nunito', sans-serif;
+	src: url('http://fonts.googleapis.com/css?family=Nunito:400,700');
+}
+
+#my_canvas {
+	border: 1px solid red;
 }
