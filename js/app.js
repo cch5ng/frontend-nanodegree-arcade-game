@@ -593,6 +593,7 @@ document.addEventListener('click', function(e) {
     } else if (curGameState == gameStates[2]) {
         if (mPos.x >= (CANVAS_DIMENSIONS[0] / 2 - 45) && mPos.x <= (CANVAS_DIMENSIONS[0] / 2 + 45) && mPos.y >= 280 && mPos.y <= 320) { //if user presses replay button
             curGameState = gameStates[1];
+            player.reset();
             timer.startTime = Date.now();
             score = 0;
             lives = 3;
