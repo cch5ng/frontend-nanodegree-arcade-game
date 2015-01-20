@@ -14,7 +14,7 @@ var Engine = (function(global) {
     canvas.width = 505;
     canvas.height = 606;
     doc.body.appendChild(canvas);
-    ctx.font = "30pt Arial"; //lives, score
+    ctx.font = "400 30pt Nunito"; //lives, score
 
     function main() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -23,34 +23,33 @@ var Engine = (function(global) {
             dt = (now - lastTime) / 1000.0; //dt is about 0.016 b/c of the requestAnimationFrame() at end of main()
             update(dt);
             render();
-            gameOverString = 'GAME OVER';
+            gameOverString = 'Game Over';
             lastTime = now;
         } else if (curGameState == gameStates[0]) { //game not started
             allAvatars.forEach(function(my_avatar) {
                 my_avatar.update();
                 my_avatar.render();
             });
-            //startBtn.update();
+            startBtn.update();
             startBtn.render();
         } else if (curGameState == gameStates[2]) { //game over
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            if (score >= SCORE_TO_WIN) {
-                gameOverString = 'YOU WON';
-            }
-            //var btnString1 = 'Replay',
-                //metrics1 = ctx.measureText(btnString1),
-            var metrics2 = ctx.measureText(gameOverString),
-                btnString1Width,
-                gameOverWidth;
-            //clear rect from the start button
-            //startBtn = null;
-            //replayBtn.update();
+            // if (score >= SCORE_TO_WIN) {
+            //     gameOverString = 'You Win';
+            // }
+            // var metrics2 = ctx.measureText(gameOverString),
+            //     gameOverWidth;
+            gameOverText.update();
+            gameOverText.render();
+            replayBtn.update();
             replayBtn.render();
-            ctx.fillStyle = '#bf0e0e';
-            ctx.font = '36pt Aclonica';
-            gameOverWidth = metrics2.width;
+            //TODO the x position gets thrown off for the text when btn called from app.js and game over called in engine
+            //think the best fix is to write a function in app.js that draws the game over/you win text and call it from here
+            // ctx.fillStyle = '#bf0e0e';
+            // ctx.font = '700 36pt Nunito';
+            // gameOverWidth = metrics2.width;
             //had to make adjustment to x position b/c measureText() set width for 'GAME' instead of 'GAME OVER'
-            ctx.fillText(gameOverString, (canvas.width / 2 - gameOverWidth / 2), 240);
+            // ctx.fillText(gameOverString, (canvas.width / 2 - gameOverWidth / 2), 240);
         }
         win.requestAnimationFrame(main);
     }
