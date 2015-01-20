@@ -30,26 +30,12 @@ var Engine = (function(global) {
                 my_avatar.update();
                 my_avatar.render();
             });
-            startBtn.update();
             startBtn.render();
         } else if (curGameState == gameStates[2]) { //game over
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            // if (score >= SCORE_TO_WIN) {
-            //     gameOverString = 'You Win';
-            // }
-            // var metrics2 = ctx.measureText(gameOverString),
-            //     gameOverWidth;
             gameOverText.update();
             gameOverText.render();
-            replayBtn.update();
             replayBtn.render();
-            //TODO the x position gets thrown off for the text when btn called from app.js and game over called in engine
-            //think the best fix is to write a function in app.js that draws the game over/you win text and call it from here
-            // ctx.fillStyle = '#bf0e0e';
-            // ctx.font = '700 36pt Nunito';
-            // gameOverWidth = metrics2.width;
-            //had to make adjustment to x position b/c measureText() set width for 'GAME' instead of 'GAME OVER'
-            // ctx.fillText(gameOverString, (canvas.width / 2 - gameOverWidth / 2), 240);
         }
         win.requestAnimationFrame(main);
     }

@@ -349,80 +349,43 @@ var Button = function(y, displayStr) {
     this.x = CANVAS_DIMENSIONS[0] / 2 - BUTTON_DIMENSIONS[0] / 2; //this is a constant value, centering the button in the canvas
     this.y = y;
     this.displayStr = displayStr;
-    this.displayStrX = 0;
-    //this.displayStrWidth = 0;
 };
 
 Button.prototype.render = function() {
     //draw btn rect
     var metrics = ctx.measureText(this.displayStr);
     var displayStrWidth = metrics.width;
-    console.log('button displayStrWidth: ' + this.displayStrWidth);
-    //console.log('this: ' + this);
 
     ctx.fillStyle = '#a3bdc8';
-    //ctx.lineWidth = '1';
-    //ctx.strokeStyle = '#57515d';
     ctx.fillRect(this.x, this.y, BUTTON_DIMENSIONS[0], BUTTON_DIMENSIONS[1]); //start button y: 175
-    //ctx.stroke();
     //draw button text
     ctx.font = '400 16pt Nunito';
+    ctx.textAlign = 'center';
     ctx.fillStyle = 'black';
-    ctx.fillText(this.displayStr, this.displayStrX, this.y + 40 / 4 + 16); //16 - font size //
-};
-
-Button.prototype.update = function() {
-    var metrics = ctx.measureText(this.displayStr);
-    var displayStrWidth = metrics.width;
-    if (this.displayStr == 'Replay') {
-        this.displayStrX = (CANVAS_DIMENSIONS[0] / 2) - (displayStrWidth / 2) + 45;
-        //ctx.font = '400 16pt Nunito';
-        //ctx.fillStyle = 'black';
-        //ctx.fillText(this.displayStr, ((CANVAS_DIMENSIONS[0] / 2) - (displayStrWidth / 2)) + 160, this.y + 40 / 4 + 16); //16 - font size //
-    } else {
-        this.displayStrX = (CANVAS_DIMENSIONS[0] / 2) - (displayStrWidth / 2);
-    }
-    // if (this.y == 175) { //if start button, clear rect respective to the replay button
-    //     console.log('start button hide replay');
-    //     ctx.clearRect(CANVAS_DIMENSIONS[0] / 2 - BUTTON_DIMENSIONS[0] / 2 - 2, 278, 94, 44);
-    // } else { //if replay button, clear rect respective to the start button
-    //     console.log('replay button hide start');
-    //     //ctx.clearRect(0, 0, CANVAS_DIMENSIONS[0], CANVAS_DIMENSIONS[1]);
-    //     ctx.clearRect(CANVAS_DIMENSIONS[0] / 2 - BUTTON_DIMENSIONS[0] / 2 - 2, 173, 94, 44); //added extra border of 2 to make sure stroke gets erased
-    // }
+    ctx.fillText(this.displayStr, (CANVAS_DIMENSIONS[0] / 2), this.y + 40 / 4 + 16); //16 - font size //
 };
 
 //needs render and update functions
-//ERR this did not resolve text alignment issue on the last screen
-//seems like both GAME OVER and replay button text are left aligned together but not centered
 var GameOverText = function(y, displayStr) {
     this.y = y;
     this.displayStr = displayStr;
-    this.displayStrX = 0;
 };
 
 GameOverText.prototype.render = function() {
     var metrics = ctx.measureText(this.displayStr);
     ctx.fillStyle = '#bf0e0e';
     ctx.font = '700 36pt Nunito';
+    ctx.textAlign = 'center';
     var gameOverWidth = metrics.width;
-    this.displayStrX = (CANVAS_DIMENSIONS[0] / 2 - gameOverWidth / 2);
-    //had to make adjustment to x position b/c measureText() set width for 'GAME' instead of 'GAME OVER'
-    ctx.fillText(this.displayStr, this.displayStrX, this.y);//y = 240
+    ctx.fillText(this.displayStr, CANVAS_DIMENSIONS[0] / 2, this.y);//y = 240
 };
 
 GameOverText.prototype.update = function() {
-    var metrics; // = ctx.measureText(this.displayStr);
-    var gameOverWidth; // = metrics.width;
     if (score >= SCORE_TO_WIN) { //player won
         this.displayStr = GAME_OVER_STR[1];
-        metrics = ctx.measureText(GAME_OVER_STR[1]);
     } else {
         this.displayStr = GAME_OVER_STR[0];
-        metrics = ctx.measureText(GAME_OVER_STR[0]);
     }
-    gameOverWidth = metrics.width;
-    this.displayStrX = (CANVAS_DIMENSIONS[0] / 2 - gameOverWidth / 2) - 600;
 };
 
 //needs render and update functions
@@ -502,6 +465,7 @@ scoreText.render = function() {
     var metrics = ctx.measureText(this.displayStr);
     ctx.clearRect(0, 0, metrics.width, 43);
     ctx.fillStyle = 'black';
+    ctx.textAlign = 'start';
     ctx.font = '400 24pt Nunito'; //not sure why this is not getting applied
     ctx.fillText(this.displayStr, 0, 40);
 };
@@ -511,6 +475,7 @@ livesText.render = function() {
     var metrics = ctx.measureText(this.displayStr);
     ctx.clearRect(CANVAS_DIMENSIONS[0] - metrics.width, 0, metrics.width, 43);
     ctx.fillStyle = 'black';
+    ctx.textAlign = 'start';
     ctx.font = '400 24pt Nunito';
     ctx.fillText(this.displayStr, CANVAS_DIMENSIONS[0] - metrics.width, 40);
 };
