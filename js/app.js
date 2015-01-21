@@ -299,12 +299,12 @@ Prize.prototype.reset = function() {
     var newX,
         newY;
     newX = PRIZE_X[getRandomInt(0, 5)];
-    while (newX <= (lastPrizePos[0] + 1) && newX >= (lastPrizePos[0] - 1) ) {
+    while (newX == (lastPrizePos[0] + 1) || newX == (lastPrizePos[0] - 1) || newX == (lastPrizePos[0])) {
         newX = PRIZE_X[getRandomInt(0, 5)];
         //console.log('x while loop called');
     }
     newY = PRIZE_Y[getRandomInt(0, 3)];
-    while (newY <= (lastPrizePos[1] + 1) && newY >= (lastPrizePos[1] - 1) ) {
+    while (newY == (lastPrizePos[1] + 1) || newY == (lastPrizePos[1] - 1) || newY == (lastPrizePos[1])) {
         newY = PRIZE_Y[getRandomInt(0, 3)];
         //console.log('y while loop called');
     }
