@@ -392,13 +392,13 @@ var GameStartText = function(y) {
     this.y = y;
     this.lines = [
         'Welcome.',
-        'Our streets are filled with magical objects like',
+        'Our roads are filled with magical objects like',
         'hearts, keys, and stars. If you can get 10 objects,',
-        'you will be awarded Master Street Dodger.',
+        'you will be awarded Master Dodger.',
         'Navigate using the arrow keys.',
-        'Beware! There are deadly bugs on the streets.',
-        'If you cross too quickly, you may fall into the water',
-        'and drown. Click on an avatar and then Start.',
+        'Beware! Deadly bugs guard the roads.',
+        'If you cross too quickly, you may fall into the',
+        'lake and drown. Click on an avatar and then Start.',
         'Take care and godspeed.'
     ];
 };
