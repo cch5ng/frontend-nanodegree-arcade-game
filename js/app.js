@@ -31,14 +31,15 @@ var PRIZE_X = [0, 101, 202, 303, 404];
 var PRIZE_Y = [72, 155, 238];
 var BUTTON_DIMENSIONS = [90, 40]; //width and height
 var SCORE_TO_WIN = 10; //default 10 points to win game
+var GAME_OVER_STR = ['Game Over', 'You Win'];
+var gameStates = ['notStarted', 'started', 'over'];
 var score = 0;
 var lives = 3;
-var gameStates = ['notStarted', 'started', 'over'];
 var curGameState = gameStates[0];
 var gameStarted = false;
 var avatarIdx = 0;
 var gameLength = 120; //default 120
-var GAME_OVER_STR = ['Game Over', 'You Win'];
+var lastPrizePos = []; //0 index for x position; 1 index for y position of last prize
 var startTime;
 
 //helper functions
@@ -282,14 +283,35 @@ Avatar.prototype.update = function() {
  var Prize = function(x, y) {
     DynamicElement.call(this, x, y);
     this.sprite = PRIZE_IMAGE[getRandomInt(0, 3)]; //gets a random image path
+    this.active = true;
+    lastPrizePos[0] = x;
+    lastPrizePos[1] = y;
 };
 Prize.prototype = Object.create(DynamicElement.prototype);
 Prize.prototype.constructor = Prize;
 
-/** After the player has collected a prize, the prize is reset with a new, random location and random image.*/
+/** 
+ * After the player has collected a prize, the prize is reset with a new,
+ * random location and random image. Additional conditions check that a new 
+ * prize is not positioned adjacent to where the last prize was located.
+ */
 Prize.prototype.reset = function() {
-    this.x = PRIZE_X[getRandomInt(0, 5)];
-    this.y = PRIZE_Y[getRandomInt(0, 3)];
+    var newX,
+        newY;
+    newX = PRIZE_X[getRandomInt(0, 5)];
+    while (newX <= (lastPrizePos[0] + 1) && newX >= (lastPrizePos[0] - 1) ) {
+        newX = PRIZE_X[getRandomInt(0, 5)];
+        //console.log('x while loop called');
+    }
+    newY = PRIZE_Y[getRandomInt(0, 3)];
+    while (newY <= (lastPrizePos[1] + 1) && newY >= (lastPrizePos[1] - 1) ) {
+        newY = PRIZE_Y[getRandomInt(0, 3)];
+        //console.log('y while loop called');
+    }
+    this.x = newX;
+    this.y = newY;
+    lastPrizePos[0] = newX;
+    lastPrizePos[1] = newY;
     this.sprite = PRIZE_IMAGE[getRandomInt(0, 3)];
 };
 
