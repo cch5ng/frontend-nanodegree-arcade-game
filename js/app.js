@@ -18,11 +18,11 @@ var CANVAS_DIMENSIONS = [505, 606],
         'images/char-horn-girl-rect.png',
         'images/char-princess-girl-rect.png'
     ],
-    PRIZE_IMAGE = [
+    PRIZE_LOW_IMAGE = [
         'images/Heart.png',
-        'images/Key.png',
-        'images/Star.png'
-    ];
+        'images/Key.png'
+    ],
+    PRIZE_HIGH_IMAGE = 'images/Star.png';
 var MIC_IMAGE = ['images/mic50x50.jpg', 'images/mic_grey.jpg']; //first image for audio player on, second image for off
 var ENEMY_VELOCITY = [25, 180]; //increase the low range of velocity to make game slightly easier
 var PLAYER_START_LOC = [202, 405];
@@ -30,7 +30,7 @@ var PLAYER_MOVE = [101, 83];
 var PRIZE_X = [0, 101, 202, 303, 404];
 var PRIZE_Y = [72, 155, 238];
 var BUTTON_DIMENSIONS = [90, 40]; //width and height
-var SCORE_TO_WIN = 10; //default 10 points to win game
+var SCORE_TO_WIN = 20; //default 10 points to win game
 var GAME_OVER_STR = ['Game Over', 'You Win'];
 var gameStates = ['notStarted', 'started', 'over'];
 var score = 0;
@@ -197,9 +197,10 @@ Player.prototype.update = function() {
        called and the score will be incremented by 1.
  */
 Player.prototype.checkCollisions = function() {
-    var playerStoneCell = [];
-    var enemyStoneCell = [];
-    var prizeStoneCell = [];
+    var playerStoneCell = [],
+        enemyStoneCell = [],
+        prizeStoneCell = [],
+        prizeHighStoneCell = [];
 
     //check for collision with bug
     playerStoneCell = getStoneCell(this.x, this.y);
@@ -217,14 +218,19 @@ Player.prototype.checkCollisions = function() {
     }
     //check for collision with prize
     prizeStoneCell = getStoneCell(prize.x, prize.y);
+    prizeHighStoneCell = getStoneCell(prizeHigh.x, prizeHigh.y);
     if (playerStoneCell[0] == prizeStoneCell[0] && playerStoneCell[1] == prizeStoneCell[1]) {
         prize.reset();
         score += 1;
-        //check if player has won game
-        if (score >= SCORE_TO_WIN) {
-            curGameState = gameStates[2];
-        }
+    } else if (playerStoneCell[0] == prizeHighStoneCell[0] && playerStoneCell[1] == prizeHighStoneCell[1]) {
+        prizeHigh.reset();
+        score += 3;
     }
+    //check if player has won game
+    if (score >= SCORE_TO_WIN) {
+        curGameState = gameStates[2];
+    }
+
 };
 
 /** Updates the player to its starting position.*/
@@ -282,7 +288,7 @@ Avatar.prototype.update = function() {
  */
  var Prize = function(x, y) {
     DynamicElement.call(this, x, y);
-    this.sprite = PRIZE_IMAGE[getRandomInt(0, 3)]; //gets a random image path
+    this.sprite = PRIZE_LOW_IMAGE[getRandomInt(0, 2)]; //gets a random image path
     this.active = true;
     lastPrizePos[0] = x;
     lastPrizePos[1] = y;
@@ -298,9 +304,9 @@ Prize.prototype.constructor = Prize;
 Prize.prototype.reset = function() {
     var newX,
         newY;
-    newX = PRIZE_X[getRandomInt(0, 5)];
+    newX = PRIZE_X[getRandomInt(1, 5)];
     while (newX == (lastPrizePos[0] + 1) || newX == (lastPrizePos[0] - 1) || newX == (lastPrizePos[0])) {
-        newX = PRIZE_X[getRandomInt(0, 5)];
+        newX = PRIZE_X[getRandomInt(1, 5)];
         //console.log('x while loop called');
     }
     newY = PRIZE_Y[getRandomInt(0, 3)];
@@ -312,7 +318,57 @@ Prize.prototype.reset = function() {
     this.y = newY;
     lastPrizePos[0] = newX;
     lastPrizePos[1] = newY;
-    this.sprite = PRIZE_IMAGE[getRandomInt(0, 3)];
+    this.sprite = PRIZE_LOW_IMAGE[getRandomInt(0, 2)];
+};
+
+/**
+ * Represents a high scoring prize, or star.
+ * @constructor
+ * @param {integer} x - initial X position for the element
+ * @param {integer} x - initial Y position for the element
+ */
+ var PrizeHigh = function(x, y) {
+    DynamicElement.call(this, x, y);
+    this.sprite = PRIZE_HIGH_IMAGE; //gets a random image path
+    this.active = true;
+    lastPrizePos[0] = x;
+    lastPrizePos[1] = y;
+};
+PrizeHigh.prototype = Object.create(DynamicElement.prototype);
+PrizeHigh.prototype.constructor = PrizeHigh;
+
+/**
+ * Renders high scoring prize when one minute left in the game.
+ */
+PrizeHigh.prototype.render = function() {
+    if (lives > 0 && timer.min == 0 && timer.secTen % 2 == 0) {
+        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    }
+};
+
+/** 
+ * After the player has collected a prize, the prize is reset with a new,
+ * random location and random image. Additional conditions check that a new 
+ * prize is not positioned adjacent to where the last prize was located.
+ */
+PrizeHigh.prototype.reset = function() {
+    var newX,
+        newY;
+    newX = 0;
+    // while (newX == (lastPrizePos[0] + 1) || newX == (lastPrizePos[0] - 1) || newX == (lastPrizePos[0])) {
+    //     newX = 0;
+    //     //console.log('x while loop called');
+    // }
+    newY = PRIZE_Y[getRandomInt(0, 3)];
+    while (newY == (lastPrizePos[1] + 1) || newY == (lastPrizePos[1] - 1) || newY == (lastPrizePos[1])) {
+        newY = PRIZE_Y[getRandomInt(0, 3)];
+        //console.log('y while loop called');
+    }
+    this.x = newX;
+    this.y = newY;
+    lastPrizePos[0] = newX;
+    lastPrizePos[1] = newY;
+    this.sprite = PRIZE_HIGH_IMAGE;
 };
 
 /**
@@ -499,10 +555,11 @@ for (var j = 0; j < 8; j++) { //increased enemy count to 7 to make more challeng
     allEnemies.push(enemy);
 }
 
-var prize = new Prize(303, 155);
 var livesText = new Text('Lives', lives);
 var scoreText = new Text('Score', score);
 var timer = new Timer(gameLength);
+var prize = new Prize(303, 155);
+var prizeHigh = new PrizeHigh(0, 72);
 var gameStartText = new GameStartText(250);
 var gameOverText = new GameOverText(240, GAME_OVER_STR[0]);
 
