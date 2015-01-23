@@ -40,6 +40,7 @@ var gameStarted = false;
 var avatarIdx = 0;
 var gameLength = 120; //default 120
 var lastPrizePos = []; //0 index for x position; 1 index for y position of last prize
+var lastPrizeHighPos = [];
 var startTime;
 
 //helper functions
@@ -305,15 +306,14 @@ Prize.prototype.reset = function() {
     var newX,
         newY;
     newX = PRIZE_X[getRandomInt(1, 5)];
-    while (newX == (lastPrizePos[0] + 1) || newX == (lastPrizePos[0] - 1) || newX == (lastPrizePos[0])) {
-        newX = PRIZE_X[getRandomInt(1, 5)];
-        //console.log('x while loop called');
-    }
     newY = PRIZE_Y[getRandomInt(0, 3)];
-    while (newY == (lastPrizePos[1] + 1) || newY == (lastPrizePos[1] - 1) || newY == (lastPrizePos[1])) {
+
+    //add challenge to the game to move new prizes away from old prize position 
+    if (newX == (lastPrizePos[0]) || newY == (lastPrizePos[1])) {
+        newX = PRIZE_X[getRandomInt(1, 5)];
         newY = PRIZE_Y[getRandomInt(0, 3)];
-        //console.log('y while loop called');
     }
+
     this.x = newX;
     this.y = newY;
     lastPrizePos[0] = newX;
@@ -331,43 +331,44 @@ Prize.prototype.reset = function() {
     DynamicElement.call(this, x, y);
     this.sprite = PRIZE_HIGH_IMAGE; //gets a random image path
     this.active = true;
-    lastPrizePos[0] = x;
-    lastPrizePos[1] = y;
+    lastPrizeHighPos[0] = x;
+    lastPrizeHighPos[1] = y;
 };
 PrizeHigh.prototype = Object.create(DynamicElement.prototype);
 PrizeHigh.prototype.constructor = PrizeHigh;
 
 /**
  * Renders high scoring prize when one minute left in the game.
+ * Only renders in alternating 10 second interval.
  */
 PrizeHigh.prototype.render = function() {
-    if (lives > 0 && timer.min == 0 && timer.secTen % 2 == 0) {
+    if (lives > 0 && timer.min == 0 && timer.secTen % 2 == 1 && score <= 14) {
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     }
 };
 
 /** 
  * After the player has collected a prize, the prize is reset with a new,
- * random location and random image. Additional conditions check that a new 
+ * random location in the first column. Additional conditions check that a new 
  * prize is not positioned adjacent to where the last prize was located.
  */
 PrizeHigh.prototype.reset = function() {
-    var newX,
+    var //newX,
         newY;
-    newX = 0;
+    //newX = 0;
     // while (newX == (lastPrizePos[0] + 1) || newX == (lastPrizePos[0] - 1) || newX == (lastPrizePos[0])) {
     //     newX = 0;
     //     //console.log('x while loop called');
     // }
     newY = PRIZE_Y[getRandomInt(0, 3)];
-    while (newY == (lastPrizePos[1] + 1) || newY == (lastPrizePos[1] - 1) || newY == (lastPrizePos[1])) {
+    if (newY == (lastPrizeHighPos[1] + 83) || newY == (lastPrizeHighPos[1])) {
         newY = PRIZE_Y[getRandomInt(0, 3)];
         //console.log('y while loop called');
     }
-    this.x = newX;
+    //this.x = newX;
     this.y = newY;
-    lastPrizePos[0] = newX;
-    lastPrizePos[1] = newY;
+    //lastPrizePos[0] = newX;
+    lastPrizeHighPos[1] = newY;
     this.sprite = PRIZE_HIGH_IMAGE;
 };
 
@@ -448,13 +449,14 @@ var GameStartText = function(y) {
     this.y = y;
     this.lines = [
         'Welcome.',
-        'Our roads are filled with magical objects like',
-        'hearts, keys, and stars. If you can get 10 objects,',
-        'you will be awarded Master Dodger.',
+        'Our roads are filled with magical objects like hearts',
+        'and keys. Stars are special and worth 3 points.',
+        'If you can get 20 points, you will be awarded',
+        'Master Dodger.',
         'Navigate using the arrow keys.',
-        'Beware! Deadly bugs guard the roads.',
-        'If you cross too quickly, you may fall into the',
-        'lake and drown. Click on an avatar and then Start.',
+        'Beware! Deadly bugs guard the roads. If you cross',
+        'too quickly, you may fall into the lake and drown.',
+        'Click on an avatar and then Start.',
         'Take care and godspeed.'
     ];
 };
