@@ -282,7 +282,7 @@ Avatar.prototype.update = function() {
 };
 
 /**
- * Represents a prize, such as heart or star.
+ * Represents a prize, such as heart or key.
  * @constructor
  * @param {integer} x - initial X position for the element
  * @param {integer} x - initial Y position for the element
@@ -334,8 +334,6 @@ Prize.prototype.reset = function() {
     lastPrizeHighPos[0] = x;
     lastPrizeHighPos[1] = y;
 };
-PrizeHigh.prototype = Object.create(DynamicElement.prototype);
-PrizeHigh.prototype.constructor = PrizeHigh;
 
 /**
  * Renders high scoring prize when one minute left in the game.
@@ -353,21 +351,14 @@ PrizeHigh.prototype.render = function() {
  * prize is not positioned adjacent to where the last prize was located.
  */
 PrizeHigh.prototype.reset = function() {
-    var //newX,
-        newY;
-    //newX = 0;
-    // while (newX == (lastPrizePos[0] + 1) || newX == (lastPrizePos[0] - 1) || newX == (lastPrizePos[0])) {
-    //     newX = 0;
-    //     //console.log('x while loop called');
-    // }
+    var newY;
+
     newY = PRIZE_Y[getRandomInt(0, 3)];
     if (newY == (lastPrizeHighPos[1] + 83) || newY == (lastPrizeHighPos[1])) {
         newY = PRIZE_Y[getRandomInt(0, 3)];
         //console.log('y while loop called');
     }
-    //this.x = newX;
     this.y = newY;
-    //lastPrizePos[0] = newX;
     lastPrizeHighPos[1] = newY;
     this.sprite = PRIZE_HIGH_IMAGE;
 };
@@ -478,11 +469,9 @@ var GameOverText = function(y, displayStr) {
 };
 
 GameOverText.prototype.render = function() {
-    //var metrics = ctx.measureText(this.displayStr);
     ctx.fillStyle = '#bf0e0e';
     ctx.font = '700 36pt Nunito';
     ctx.textAlign = 'center';
-    //var gameOverWidth = metrics.width;
     ctx.fillText(this.displayStr, CANVAS_DIMENSIONS[0] / 2, this.y);//y = 240
 };
 
@@ -528,12 +517,6 @@ Timer.prototype.update = function(curTime) {
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
-// var allAvatars = [];
-
-// for (var k = 0; k < 4; k++) {
-//     var avatar = new Player(50 + k * 101, 0);
-//     allAvatars.push(avatar);
-// }
 
 var allAvatars = [];
 var avatar = new Avatar(50, 0, 0);
@@ -546,8 +529,6 @@ for (var k = 1; k < 4; k++) {
 
 var startBtn = new Button(175, 'Start');
 var replayBtn = new Button(280, 'Replay');
-// console.log('length allAvatars: ' + allAvatars.length);
-// console.log('sprite avatar0: ' + allAvatars[0].sprite);
 
 var player = new Player(PLAYER_START_LOC[0], PLAYER_START_LOC[1]);
 var allEnemies = [];
@@ -565,16 +546,13 @@ var prizeHigh = new PrizeHigh(0, 72);
 var gameStartText = new GameStartText(250);
 var gameOverText = new GameOverText(240, GAME_OVER_STR[0]);
 
-
-//console.log(timer.displayStr);
-
 /** Renders the Score at the left edge.*/
 scoreText.render = function() {
     var metrics = ctx.measureText(this.displayStr);
     ctx.clearRect(0, 0, metrics.width, 43);
     ctx.fillStyle = 'black';
     ctx.textAlign = 'start';
-    ctx.font = '400 24pt Nunito'; //not sure why this is not getting applied
+    ctx.font = '400 24pt Nunito';
     ctx.fillText(this.displayStr, 0, 40);
 };
 
@@ -590,11 +568,12 @@ livesText.render = function() {
 
 var audioIcon = new AudioIcon(CANVAS_DIMENSIONS[0] - 180, 0, 38, 38);
 
-/**This listens for key presses and sends the keys to your
- *     Player.handleInput() method. You don't need to modify this.
- *     Updated from initial logic using event.keyCode b/c MDN mentioned deprecated (OK for firefox).
- *     But having a challenge finding which keyboard event value format Chrome is currently using.
- *     Might have to accept both e.key and e.keyCode?
+/**
+ *  This listens for key presses and sends the keys to your
+ *  Player.handleInput() method. You don't need to modify this.
+ *  Updated from initial logic using event.keyCode b/c MDN mentioned deprecated (OK for firefox).
+ *  But having a challenge finding which keyboard event value format Chrome is currently using.
+ *  Might have to accept both e.key and e.keyCode?
  */
 document.addEventListener('keyup', function(e) {
     var allowedKeys = ['Left', 'Right', 'Down', 'Up', 'k', 'i', 'j', 'l'];
@@ -608,8 +587,6 @@ document.addEventListener('keyup', function(e) {
         75: 'down',
         76: 'right'
     };
-
-    // console.log(e.key);
 
     if (e.keyCode != undefined) {
         player.handleInput(allowedKeyCodes[e.keyCode]);
