@@ -309,7 +309,7 @@ Prize.prototype.reset = function() {
     newY = PRIZE_Y[getRandomInt(0, 3)];
 
     //add challenge to the game to move new prizes away from old prize position 
-    if (newX == (lastPrizePos[0]) || newY == (lastPrizePos[1])) {
+    if (newX == (lastPrizePos[0]) || newX == (lastPrizePos[0]) + 101 || newX == (lastPrizePos[0]) - 101 || newY == (lastPrizePos[1])) {
         newX = PRIZE_X[getRandomInt(1, 5)];
         newY = PRIZE_Y[getRandomInt(0, 3)];
     }
@@ -337,7 +337,7 @@ Prize.prototype.reset = function() {
 
 /**
  * Renders high scoring prize when one minute left in the game.
- * Only renders in alternating 10 second interval.
+ * Only renders in alternating 10 second intervals.
  */
 PrizeHigh.prototype.render = function() {
     if (lives > 0 && timer.min == 0 && timer.secTen % 2 == 1 && score <= 14) {
@@ -354,6 +354,7 @@ PrizeHigh.prototype.reset = function() {
     var newY;
 
     newY = PRIZE_Y[getRandomInt(0, 3)];
+    //avoid creating new prize in same place or below the last prize
     if (newY == (lastPrizeHighPos[1] + 83) || newY == (lastPrizeHighPos[1])) {
         newY = PRIZE_Y[getRandomInt(0, 3)];
         //console.log('y while loop called');
