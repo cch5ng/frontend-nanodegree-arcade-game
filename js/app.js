@@ -24,7 +24,7 @@ var CANVAS_DIMENSIONS = [505, 606],
     ],
     PRIZE_HIGH_IMAGE = 'images/Star.png';
 var MIC_IMAGE = ['images/mic50x50.jpg', 'images/mic_grey.jpg']; //first image for audio player on, second image for off
-var ENEMY_VELOCITY = [25, 180]; //increase the low range of velocity to make game slightly easier
+var ENEMY_VELOCITY = [60, 180]; //increase the low range of velocity to make game slightly easier
 var PLAYER_START_LOC = [202, 405];
 var PLAYER_MOVE = [101, 83];
 var PRIZE_X = [0, 101, 202, 303, 404];
