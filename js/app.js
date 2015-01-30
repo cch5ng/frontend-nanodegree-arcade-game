@@ -455,7 +455,7 @@ var GameStartText = function(y) {
 
 GameStartText.prototype.render = function() {
     ctx.fillStyle = 'black';
-    ctx.font = '400 16pt Nunito';
+    ctx.font = '400 14pt Nunito';
     ctx.textAlign = 'left';
     var linesLength = this.lines.length;
     for (var m = 0; m < linesLength; m++) {
