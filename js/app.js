@@ -24,7 +24,7 @@ var CANVAS_DIMENSIONS = [505, 606],
     ],
     PRIZE_HIGH_IMAGE = 'images/Star.png';
 var MIC_IMAGE = ['images/mic50x50.jpg', 'images/mic_grey.jpg']; //first image for audio player on, second image for off
-var ENEMY_VELOCITY = [20, 30]; //increase the low range of velocity to make game slightly easier; 60, 180
+var ENEMY_VELOCITY = [60, 200]; //increase the low range of velocity to make game slightly easier; 60, 180
 var PLAYER_START_LOC = [202, 405];
 var PLAYER_MOVE = [101, 83];
 var PRIZE_X = [0, 101, 202, 303, 404];
@@ -243,7 +243,7 @@ Player.prototype.checkCollisions = function() {
         var distPlayerEnemy = distance(playerCenter, enemyCenter);
         //TODO need to clean up logic such that
         //if player and enemy are in same row, the difference between their center X positions < 80 results in collision
-        if ((playerCenter[1] == enemyCenter[1] && Math.abs(playerCenter[0] - enemyCenter[0]) < 80) {
+        if ((playerCenter[1] == enemyCenter[1] && Math.abs(playerCenter[0] - enemyCenter[0]) < 80)) {
             this.reset()
             lives -= 1;
         } //check if player has died
@@ -252,22 +252,11 @@ Player.prototype.checkCollisions = function() {
         }
     }
 
-    //check for collision with bug (in same grid square)
-    // playerStoneCell = getStoneCell(this.x, this.y);
-    // for (var i=0; i < allEnemies.length; i++) {
-    //     enemyStoneCell = getStoneCell(allEnemies[i].x, allEnemies[i].y);
-    //     if (playerStoneCell[0] == enemyStoneCell[0] && playerStoneCell[1] == enemyStoneCell[1] && enemyStoneCell[0] >= 0 && enemyStoneCell[1] >=0) {
-    //         this.reset();
-    //         lives -= 1;
-    //         //check if player has died
-    //     }
-    //     if (lives <= 0) {
-    //         curGameState = gameStates[2];
-    //     }
-
     //check for collision with prize
+    //TODO broke this part but do not know why
     prizeStoneCell = getStoneCell(prize.x, prize.y);
     prizeHighStoneCell = getStoneCell(prizeHigh.x, prizeHigh.y);
+    playerStoneCell = getStoneCell(player.x, player.y);
     if (playerStoneCell[0] == prizeStoneCell[0] && playerStoneCell[1] == prizeStoneCell[1]) {
         prize.reset();
         score += 1;
@@ -279,7 +268,6 @@ Player.prototype.checkCollisions = function() {
     if (score >= SCORE_TO_WIN) {
         curGameState = gameStates[2];
     }
-
 };
 
 /** Updates the player to its starting position.*/
@@ -357,7 +345,7 @@ Prize.prototype.reset = function() {
     newY = PRIZE_Y[getRandomInt(0, 3)];
 
     //add challenge to the game to move new prizes away from old prize position 
-    if (newX == (lastPrizePos[0]) || newX == (lastPrizePos[0]) + 101 || newX == (lastPrizePos[0]) - 101 || newY == (lastPrizePos[1])) {
+    while (newX == (lastPrizePos[0]) || newX == (lastPrizePos[0]) + 101 || newX == (lastPrizePos[0]) - 101 || newY == (lastPrizePos[1])) {
         newX = PRIZE_X[getRandomInt(1, 5)];
         newY = PRIZE_Y[getRandomInt(0, 3)];
     }
@@ -582,7 +570,7 @@ var replayBtn = new Button(280, 'Replay');
 var player = new Player(PLAYER_START_LOC[0], PLAYER_START_LOC[1]);
 var allEnemies = [];
 
-for (var j = 0; j < 1; j++) { //increased enemy count to 7 to make more challenging
+for (var j = 0; j < 8; j++) { //increased enemy count to 7 to make more challenging
     var enemy = new Enemy(0, ENEMY_HEIGHTS[getRandomInt(0, 3)]);
     allEnemies.push(enemy);
 }
