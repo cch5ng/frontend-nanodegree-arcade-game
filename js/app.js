@@ -24,7 +24,7 @@ var CANVAS_DIMENSIONS = [505, 606],
     ],
     PRIZE_HIGH_IMAGE = 'images/Star.png';
 var MIC_IMAGE = ['images/mic50x50.jpg', 'images/mic_grey.jpg']; //first image for audio player on, second image for off
-var ENEMY_VELOCITY = [60, 180]; //increase the low range of velocity to make game slightly easier
+var ENEMY_VELOCITY = [20, 30]; //increase the low range of velocity to make game slightly easier; 60, 180
 var PLAYER_START_LOC = [202, 405];
 var PLAYER_MOVE = [101, 83];
 var PRIZE_X = [0, 101, 202, 303, 404];
@@ -79,6 +79,35 @@ function getStoneCell(x, y) {
     stoneCell[1] = celly;
 
     return stoneCell;
+}
+
+/**
+ * Given a player or enemy's current position, returns the point at the approximate center of the player/enemy. Used in collision detection
+ * (circle collision pattern).
+ * @param x {integer}: X position of player/enemy
+ * @param y {integer}: Y position of player/enemy
+ */
+function getCenter(x, y) {
+    var xOffset = 50.5;
+    var yOffset = 105;
+    var center = []; //idx 0 - x position; idx 1 - y position
+
+    center[0] = x + xOffset;
+    center[1] = y + yOffset;
+    console.log('player x center: ' + center[0]);
+    console.log('player y center: ' + center[1]);
+    return center;
+}
+
+/**
+ * Given two points, returns the distance between them.
+ * @param point1 {[integer, integer]}: point1[0] is the x position; point1[1] is the y position
+ * @param point2 {[integer, integer]}: point2[0] is the x position; point2[1] is the y position
+ */
+function distance(point1, point2) {
+    var dist;
+    dist = Math.sqrt((point2[0] - point1[0]) * (point2[0] - point1[0]) + (point2[1] - point1[1]) * (point2[1] - point1[1]));
+    return dist;
 }
 
 //classes
@@ -201,22 +230,41 @@ Player.prototype.checkCollisions = function() {
     var playerStoneCell = [],
         enemyStoneCell = [],
         prizeStoneCell = [],
-        prizeHighStoneCell = [];
+        prizeHighStoneCell = [],
+        playerCenter = [],
+        enemyCenter = [],
+        numAllEnemies = allEnemies.length;
 
-    //check for collision with bug
-    playerStoneCell = getStoneCell(this.x, this.y);
-    for (var i=0; i < allEnemies.length; i++) {
-        enemyStoneCell = getStoneCell(allEnemies[i].x, allEnemies[i].y);
-        if (playerStoneCell[0] == enemyStoneCell[0] && playerStoneCell[1] == enemyStoneCell[1] && enemyStoneCell[0] >= 0 && enemyStoneCell[1] >=0) {
-            this.reset();
+    //check for collision with bug (circle collision)
+    playerCenter = getCenter(player.x, player.y);
+    for (var i=0; i < numAllEnemies; i++) {
+        enemyCenter = getCenter(allEnemies[i].x, allEnemies[i].y + 10); //added 10 to enemy height to correct for difference in placement with player
+        //enemyCenter[1] += 10; //correcting for some error in measure
+        var distPlayerEnemy = distance(playerCenter, enemyCenter);
+        //TODO need to clean up logic such that
+        //if player and enemy are in same row, the difference between their center X positions < 80 results in collision
+        if ((playerCenter[1] == enemyCenter[1] && Math.abs(playerCenter[0] - enemyCenter[0]) < 80) {
+            this.reset()
             lives -= 1;
-            //check if player has died
-        }
+        } //check if player has died
         if (lives <= 0) {
             curGameState = gameStates[2];
         }
-
     }
+
+    //check for collision with bug (in same grid square)
+    // playerStoneCell = getStoneCell(this.x, this.y);
+    // for (var i=0; i < allEnemies.length; i++) {
+    //     enemyStoneCell = getStoneCell(allEnemies[i].x, allEnemies[i].y);
+    //     if (playerStoneCell[0] == enemyStoneCell[0] && playerStoneCell[1] == enemyStoneCell[1] && enemyStoneCell[0] >= 0 && enemyStoneCell[1] >=0) {
+    //         this.reset();
+    //         lives -= 1;
+    //         //check if player has died
+    //     }
+    //     if (lives <= 0) {
+    //         curGameState = gameStates[2];
+    //     }
+
     //check for collision with prize
     prizeStoneCell = getStoneCell(prize.x, prize.y);
     prizeHighStoneCell = getStoneCell(prizeHigh.x, prizeHigh.y);
@@ -534,7 +582,7 @@ var replayBtn = new Button(280, 'Replay');
 var player = new Player(PLAYER_START_LOC[0], PLAYER_START_LOC[1]);
 var allEnemies = [];
 
-for (var j = 0; j < 8; j++) { //increased enemy count to 7 to make more challenging
+for (var j = 0; j < 1; j++) { //increased enemy count to 7 to make more challenging
     var enemy = new Enemy(0, ENEMY_HEIGHTS[getRandomInt(0, 3)]);
     allEnemies.push(enemy);
 }
