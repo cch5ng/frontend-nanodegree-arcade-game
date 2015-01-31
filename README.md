@@ -1,9 +1,7 @@
-frontend-nanodegree-arcade-game
-===============================
-
 <h1>Game Rules</h1>
 
-Your goal is to collect 10 prizes from the street before your time is up (3 minutes). Prizes include: Hearts, Stars, and Keys.
+Your goal is to collect 20 points in prizes before your time is up. 
+Regular prizes include: Hearts and Keys (1 point). Stars are worth 3 points.
 
 <b>Before You Begin:</b>
 <ul>
